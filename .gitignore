@@ -10,5 +10,5 @@
 TribalWars.API.csproj.FileListAbsolute.txt
 
 # Ignore these folders
-obj/Debug/
-Properties/
+Tribal-Wars-API/TribalWars.API/obj/Debug/
+Tribal-Wars-API/TribalWars.API/Properties/
