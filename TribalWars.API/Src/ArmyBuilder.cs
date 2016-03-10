@@ -16,8 +16,6 @@
  * 
  **************************************************************************/
 
-//This is a test
-
 namespace TribalWars.API
 {
     public class ArmyBuilder

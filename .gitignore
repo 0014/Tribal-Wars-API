@@ -9,4 +9,6 @@
 # ignore specific files
 TribalWars.API.csproj.FileListAbsolute.txt
 
-
+# Ignore these folders
+obj/Debug/
+Properties/
