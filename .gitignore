@@ -1,2 +1,12 @@
-#.dll
-#.cache
+# no files with following extensions
+*.dll
+*.cache
+*.pdb
+*.sln
+*.suo
+*.csproj
+
+# ignore specific files
+TribalWars.API.csproj.FileListAbsolute.txt
+
+
