@@ -71,6 +71,34 @@ namespace TribalWars.API
             armyFields[(int) ENUM.Army.Nobleman] = "unit_input_snob";
         }
 
+        public override string ToString()
+        {
+            var armyString = "Army: ";
+
+            if (_spearman > 0)
+                armyString += "\n Sp = " + _spearman;
+            if (_swordsman > 0)
+                armyString += " Sw = " + _swordsman;
+            if (_axeman > 0)
+                armyString += " Axe = " + _axeman;
+            if (_lightCavalry > 0)
+                armyString += "\n LC = " + _lightCavalry;
+            if (_heavyCavalry > 0)
+                armyString += " HC= " + _heavyCavalry;
+            if (_scout > 0)
+                armyString += " Sc = " + _scout;
+            if (_ram > 0)
+                armyString += "\n Ram = " + _ram;
+            if (_catapult > 0)
+                armyString += " Cat = " + _catapult;
+            if (_knight > 0)
+                armyString += "\n Knig = " + _knight;
+            if (_nobleman > 0)
+                armyString += " Nobl = " + _nobleman;
+
+            return armyString;
+        }
+
         public int Spearman
         {
             get { return _spearman; }
