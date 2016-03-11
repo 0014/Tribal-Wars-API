@@ -16,6 +16,8 @@
  * 
  **************************************************************************/
 
+using System;
+
 namespace TribalWars.API
 {
     public class ArmyBuilder
@@ -34,25 +36,30 @@ namespace TribalWars.API
         private int _knight;
         private int _nobleman;
 
-        public int[] Army { get; private set; }
+        private int _size;
 
+        public string Name { get; set; }
+        public int[] Army { get; private set; }
+        
         internal string[] armyFields;
 
         public ArmyBuilder()
         {
             // initialize the army size as empty
             Army = new int[10];
-            for (int i = 0; i < Army.Length; i++)
+            for (var i = 0; i < Army.Length; i++)
             {
                 Army[i] = 0;
             }
 
+            Name = "Army:"; // default army name
             SetArmyReference();
         }
 
         public ArmyBuilder(int[] army)
         {
             Army = army;
+            Name = "Army:"; // default army name
         }
 
         private void SetArmyReference()
@@ -97,6 +104,20 @@ namespace TribalWars.API
                 armyString += " Nobl = " + _nobleman;
 
             return armyString;
+        }
+
+        public string ToString(string name)
+        {
+            switch (name.ToUpperInvariant())
+            {
+                case "Name":
+                    return string.Format("{0}", Name);
+                
+                default:
+                    var msg = string.Format("'{0}' is an invalid format string", name);
+                    
+                    throw new ArgumentException(msg);
+            }
         }
 
         public int Spearman
@@ -197,6 +218,13 @@ namespace TribalWars.API
                 _nobleman = value;
                 Army[(int)ENUM.Army.Nobleman] = value;
             }
+        }
+
+        public int GetSize()
+        {
+            return _spearman + _swordsman + _axeman
+                   + _scout + _lightCavalry + _heavyCavalry
+                   + _ram + _catapult + _knight + _nobleman;
         }
     }
 }
