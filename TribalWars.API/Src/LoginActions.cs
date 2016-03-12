@@ -24,7 +24,7 @@ namespace TribalWars.API
     public class LoginActions
     {
         private static string _sessionId;
-        private static bool _actionFlag = false;
+        private static string _userId;
 
         private URL _url;
         private static WebBrowser _wb;
@@ -39,14 +39,14 @@ namespace TribalWars.API
             _sessionId = null;
         }
 
-        public bool GetLoginStatus()
+        public string GetLoginStatus()
         {
             _action = ENUM.LoginActions.LoginStatus;
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.LoginScreen));
-            return _actionFlag;
+            return _userId;
         }
 
-        public bool EnterCredentials(string userName, string password)
+        public string EnterCredentials(string userName, string password)
         {
             _action = ENUM.LoginActions.EnterCredentials;
 
@@ -55,7 +55,7 @@ namespace TribalWars.API
 
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.LoginScreen));
 
-            return true;
+            return _userId;
         }
 
         public string Login()
@@ -68,13 +68,21 @@ namespace TribalWars.API
 
         private void PageLoaded(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            _actionFlag = false; // reset the action flag
-
             switch (_action)
             {
                 case ENUM.LoginActions.LoginStatus:
                     var worldLoginButton = Tools.FindSpanContains(_wb, "32."); // check if the button exists
-                    _actionFlag = worldLoginButton != null; // if button exists, user is already logged in, else is not
+
+                    // if button exists, user is already logged in, else is not
+                    if (worldLoginButton != null)
+                    {
+                        // Get the user id
+                        var pageData1 = Tools.SetPageData(_wb, _wb.DocumentText);
+                        _userId = Tools.GetBetween(pageData1, "Merhaba", "!</H2>");
+                    }
+                    else
+                        _userId = null;
+                    
                     break;
 
                 case ENUM.LoginActions.EnterCredentials:
@@ -84,6 +92,11 @@ namespace TribalWars.API
                     Tools.SetValue(_wb, "Password", _password); // set password
 
                     Tools.Click(mainLoginButton);
+
+                    // Get the user id
+                    var pageData2 = Tools.SetPageData(_wb, _wb.DocumentText);
+                    _userId = Tools.GetBetween(pageData2, "Merhaba", "!</H2>");
+
                     break;
 
                 case ENUM.LoginActions.Login:
@@ -110,7 +123,6 @@ namespace TribalWars.API
                     if (!_wb.Url.ToString().Contains("main"))
                         return;
                     _sessionId = Tools.GetBetween(_wb.Url.ToString(), "village=", "&screen");
-                    _actionFlag = true;
                     break;
 
                 case ENUM.LoginActions.Idle:

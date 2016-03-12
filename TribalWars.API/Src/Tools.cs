@@ -16,7 +16,6 @@
  * 
  **************************************************************************/
 
-using System;
 using System.Windows.Forms;
 
 namespace TribalWars.API
@@ -32,7 +31,7 @@ namespace TribalWars.API
                 return strSource.Substring(Start, End - Start);
             }
 
-            return "";
+            return null;
         }
 
         public static string SetPageData(WebBrowser browser, string pageData)
