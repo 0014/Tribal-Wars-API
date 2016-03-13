@@ -16,7 +16,9 @@
  * 
  **************************************************************************/
 
+using System.Linq;
 using System.Windows.Forms;
+using HtmlAgilityPack;
 
 namespace TribalWars.API
 {
@@ -26,9 +28,9 @@ namespace TribalWars.API
         {
             if (strSource.Contains(strStart) && strSource.Contains(strEnd))
             {
-                var Start = strSource.IndexOf(strStart, 0) + strStart.Length;
-                var End = strSource.IndexOf(strEnd, Start);
-                return strSource.Substring(Start, End - Start);
+                var start = strSource.IndexOf(strStart, 0) + strStart.Length;
+                var end = strSource.IndexOf(strEnd, start);
+                return strSource.Substring(start, end - start);
             }
 
             return null;
@@ -92,6 +94,42 @@ namespace TribalWars.API
         public static void Click(HtmlElement element)
         {
             element.InvokeMember("click");
+        }
+
+        public static string UsageAP(WebBrowser wb)
+        {
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(wb.DocumentText);
+            var root = html.DocumentNode;
+            var p = root
+                .Descendants()
+                .Single(n => n.GetAttributeValue("class", "").Equals("module-profile-recognition"))
+                .Descendants("p")
+                .Single();
+            var content = p.InnerText;
+            return content;
+        }
+
+        public static HtmlNode FindNode(WebBrowser wb, string definition, string key)
+        {
+            HtmlNode p = null;
+
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(wb.DocumentText);
+            var root = html.DocumentNode;
+
+            try
+            {
+                p = root
+                    .Descendants()
+                    .Single(n => n.GetAttributeValue(definition, "").Equals(key));
+            }
+            catch
+            {
+                // no node is founded
+            }
+
+            return p;
         }
     }
 }

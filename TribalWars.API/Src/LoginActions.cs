@@ -31,7 +31,8 @@ namespace TribalWars.API
         private static ENUM.LoginActions _action;
 
         private string _userName, _password;
-        
+
+        #region Public Functions
         public LoginActions()
         {
             _url = new URL();
@@ -39,17 +40,30 @@ namespace TribalWars.API
             _sessionId = null;
         }
 
+        /// <summary>
+        /// This function is used to determine whether the user is already logged in or not.
+        /// </summary>
+        /// <returns> If user is already logged-in returns the user-name, else returns null</returns>
         public string GetLoginStatus()
         {
             _action = ENUM.LoginActions.LoginStatus;
+
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.LoginScreen));
+            
             return _userId;
         }
 
+        /// <summary>
+        /// This function performs logging-in using the user name and password information 
+        /// </summary>
+        /// <param name="userName"> User name account </param>
+        /// <param name="password"> password of account </param>
+        /// <returns> Returns the username if logging-in is successfull, else it returns null </returns>
         public string EnterCredentials(string userName, string password)
         {
             _action = ENUM.LoginActions.EnterCredentials;
 
+            // set username and password
             _userName = userName;
             _password = password;
 
@@ -58,30 +72,35 @@ namespace TribalWars.API
             return _userId;
         }
 
+        /// <summary>
+        /// This function is used to login to the game, It
+        /// MUST be used after the credetials are entered.
+        /// </summary>
+        /// <returns> Returns the Token that instantiates other objects. 
+        /// Returns null if login-in fails</returns>
         public string Login()
         {
             // Logining into game
             _action = ENUM.LoginActions.Login;
+            
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.LoginScreen));
-            return _sessionId;
-        }
 
+            return _sessionId; // return token
+        }
+        #endregion
+
+        #region Helper Functions
         private void PageLoaded(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             switch (_action)
             {
                 case ENUM.LoginActions.LoginStatus:
-                    var worldLoginButton = Tools.FindSpanContains(_wb, "32."); // check if the button exists
+                    
+                    var worldLoginButton = Tools.FindNode(_wb, "Class", "world_button_active");// check if the button exists
 
                     // if button exists, user is already logged in, else is not
-                    if (worldLoginButton != null)
-                    {
-                        // Get the user id
-                        var pageData1 = Tools.SetPageData(_wb, _wb.DocumentText);
-                        _userId = Tools.GetBetween(pageData1, "Merhaba", "!</H2>");
-                    }
-                    else
-                        _userId = null;
+                    _userId = worldLoginButton != null ? 
+                        Tools.FindNode(_wb, "name", "user").GetAttributeValue("value", "") : null;
                     
                     break;
 
@@ -94,35 +113,47 @@ namespace TribalWars.API
                     Tools.Click(mainLoginButton);
 
                     // Get the user id
-                    var pageData2 = Tools.SetPageData(_wb, _wb.DocumentText);
-                    _userId = Tools.GetBetween(pageData2, "Merhaba", "!</H2>");
+                    _userId = Tools.FindNode(_wb, "name", "user").GetAttributeValue("value", "");
 
                     break;
 
                 case ENUM.LoginActions.Login:
                     
+                    //Find the button to log-in
                     var loginButton = Tools.FindSpanContains(_wb, "32.");
+
+                    // after loging in, continue to the next stage to enter the game
                     _action = ENUM.LoginActions.EnterGame;
+                    
                     Tools.Click(loginButton);
                     
                     return;
 
                 case ENUM.LoginActions.EnterGame:
+                    // check if loaded page is the correct page
                     if (!_wb.Url.ToString().Contains("overview"))
                         return;
+
+                    // after entering game, the next stage is to get the session id
                     _action = ENUM.LoginActions.GetSessionId;
+                    
                     if (_wb.Document != null)
                     {
                         var elementById = _wb.Document.GetElementById("map_main");
+
                         if (elementById != null)
                             Tools.Click(elementById); // if you gett an error here check bot protection !
                     }
                     return;
 
                 case ENUM.LoginActions.GetSessionId:
+                    // check if loaded page is the correct page
                     if (!_wb.Url.ToString().Contains("main"))
                         return;
-                    _sessionId = Tools.GetBetween(_wb.Url.ToString(), "village=", "&screen");
+
+                    // get the session id which is located in the url
+                    _sessionId = Tools.GetBetween(_wb.Url.ToString(), "village=", "&screen"); 
+                    
                     break;
 
                 case ENUM.LoginActions.Idle:
@@ -130,10 +161,15 @@ namespace TribalWars.API
                     return;
             }
 
-            _action = ENUM.LoginActions.Idle;
-            Application.ExitThread();   // Stops the thread
+            _action = ENUM.LoginActions.Idle; // before exiting the thread make sure the action is set back to idle
+
+            Application.ExitThread();  // Stops the navigating thread
         }
 
+        /// <summary>
+        /// This function help the web browser to perform actions in a synchronous way.
+        /// </summary>
+        /// <param name="url"> Navigates the browser object to the input url </param>
         private void NavigateThroughTread(string url)
         {
             var th = new Thread(() =>
@@ -143,9 +179,12 @@ namespace TribalWars.API
                 _wb.Navigate(url);
                 Application.Run();
             });
+
             th.SetApartmentState(ApartmentState.STA);
             th.Start();
+            
             while (th.IsAlive){ }
         }
+        #endregion
     }
 }
