@@ -79,22 +79,22 @@ namespace TribalWars.API
                     if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.RallyPoint))) 
                         return; // keep searching the page until the buttons are all loaded 
 
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Spearman], _army.Spearman.ToString());
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Swordsman], _army.Swordsman.ToString());
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Axeman], _army.Axeman.ToString());
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Scout], _army.Scout.ToString());
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.LightCavalary], _army.LightCavalry.ToString());
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.HeavyCavalary], _army.HeavyCavalary.ToString());
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Ram], _army.Ram.ToString());
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Catapult], _army.Catapult.ToString());
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Knight], _army.Knight.ToString());
-                    Tools.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Nobleman], _army.Nobleman.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Spearman], _army.Spearman.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Swordsman], _army.Swordsman.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Axeman], _army.Axeman.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Scout], _army.Scout.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.LightCavalary], _army.LightCavalry.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.HeavyCavalary], _army.HeavyCavalary.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Ram], _army.Ram.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Catapult], _army.Catapult.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Knight], _army.Knight.ToString());
+                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Nobleman], _army.Nobleman.ToString());
 
-                    var element = Tools.FindElement(_wb, "name", "input");
+                    var element = Parser.FindElement(_wb, "name", "input");
                     element.SetAttribute("value", _coordinates[X] + "|" + _coordinates[Y]);
                     _action = ENUM.FarmActions.AttackConfirm;
                     var attack = _wb.Document.GetElementById("target_attack");
-                    Tools.Click(attack);
+                    attack.InvokeMember("click");
 
                     return;
                 case ENUM.FarmActions.AttackConfirm:
@@ -105,8 +105,8 @@ namespace TribalWars.API
 
                     if (confirm == null)
                         return;
-                    
-                    Tools.Click(confirm);
+
+                    confirm.InvokeMember("click");
 
                     break;
 
