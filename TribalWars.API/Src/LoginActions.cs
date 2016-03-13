@@ -90,42 +90,49 @@ namespace TribalWars.API
         #endregion
 
         #region Helper Functions
+
+        /// <summary>
+        /// This event fires when the navigation inside theread is complete. The main actions are performed
+        /// in this function.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PageLoaded(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             switch (_action)
             {
                 case ENUM.LoginActions.LoginStatus:
                     
-                    var worldLoginButton = Tools.FindNode(_wb, "Class", "world_button_active");// check if the button exists
+                    var worldLoginButton = Parser.FindNode(_wb, "Class", "world_button_active");// check if the button exists
 
                     // if button exists, user is already logged in, else is not
                     _userId = worldLoginButton != null ? 
-                        Tools.FindNode(_wb, "name", "user").GetAttributeValue("value", "") : null;
+                        Parser.FindNode(_wb, "name", "user").GetAttributeValue("value", "") : null;
                     
                     break;
 
                 case ENUM.LoginActions.EnterCredentials:
-                    var mainLoginButton = Tools.FindSpanContains(_wb, "Giri");
+                    var mainLoginButton = Parser.FindSpanContains(_wb, "Giri");
 
-                    Tools.SetValue(_wb, "User", _userName); // set user name
-                    Tools.SetValue(_wb, "Password", _password); // set password
+                    Parser.SetValue(_wb, "User", _userName); // set user name
+                    Parser.SetValue(_wb, "Password", _password); // set password
 
-                    Tools.Click(mainLoginButton);
+                    mainLoginButton.InvokeMember("click");
 
                     // Get the user id
-                    _userId = Tools.FindNode(_wb, "name", "user").GetAttributeValue("value", "");
+                    _userId = Parser.FindNode(_wb, "name", "user").GetAttributeValue("value", "");
 
                     break;
 
                 case ENUM.LoginActions.Login:
                     
                     //Find the button to log-in
-                    var loginButton = Tools.FindSpanContains(_wb, "32.");
+                    var loginButton = Parser.FindSpanContains(_wb, "32.");
 
                     // after loging in, continue to the next stage to enter the game
                     _action = ENUM.LoginActions.EnterGame;
-                    
-                    Tools.Click(loginButton);
+
+                    loginButton.InvokeMember("click");
                     
                     return;
 
@@ -142,7 +149,7 @@ namespace TribalWars.API
                         var elementById = _wb.Document.GetElementById("map_main");
 
                         if (elementById != null)
-                            Tools.Click(elementById); // if you gett an error here check bot protection !
+                            elementById.InvokeMember("click");  // if you gett an error here check bot protection !
                     }
                     return;
 
@@ -152,7 +159,7 @@ namespace TribalWars.API
                         return;
 
                     // get the session id which is located in the url
-                    _sessionId = Tools.GetBetween(_wb.Url.ToString(), "village=", "&screen"); 
+                    _sessionId = Parser.GetBetween(_wb.Url.ToString(), "village=", "&screen"); 
                     
                     break;
 
