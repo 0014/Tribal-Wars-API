@@ -32,7 +32,7 @@ namespace TribalWars.API
 
         private string _userName, _password;
 
-        #region Public Functions
+        
         public LoginActions()
         {
             _url = new URL();
@@ -40,6 +40,7 @@ namespace TribalWars.API
             _sessionId = null;
         }
 
+        #region Public Functions
         /// <summary>
         /// This function is used to determine whether the user is already logged in or not.
         /// </summary>

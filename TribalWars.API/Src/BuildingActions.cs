@@ -122,10 +122,15 @@ namespace TribalWars.API
 
         #region Private Functions
 
+        /// <summary>
+        /// This function is used to parse buildigin level informations, and uses this information
+        /// to construct the buildign list object
+        /// </summary>
         private void GetLevels()
         {
-            _myBuildings = new Buildings[16];
+            _myBuildings = new Buildings[16]; // instatiate building array
 
+            // define all the buildgins by the parsed data
             _myBuildings[(int)ENUM.Buildings.HQ] = new Buildings(ENUM.Buildings.HQ.ToString(), "main_buildlink_main_", Get("main"));
             _myBuildings[(int)ENUM.Buildings.RallyPoint] = new Buildings(ENUM.Buildings.RallyPoint.ToString(), "", 1);
             _myBuildings[(int)ENUM.Buildings.Statue] = new Buildings(ENUM.Buildings.Statue.ToString(), "main_buildlink_statue_", Get("statue"));
@@ -135,9 +140,9 @@ namespace TribalWars.API
             _myBuildings[(int)ENUM.Buildings.Farm] = new Buildings(ENUM.Buildings.Farm.ToString(), "main_buildlink_farm_", Get("farm"));
             _myBuildings[(int)ENUM.Buildings.Storage] = new Buildings(ENUM.Buildings.Storage.ToString(), "main_buildlink_storage_", Get("storage"));
             _myBuildings[(int)ENUM.Buildings.HiddingPlace] = new Buildings(ENUM.Buildings.HiddingPlace.ToString(), "main_buildlink_hide_", Get("hide"));
-
-            _myBuildings[(int)ENUM.Buildings.Barracks] = new Buildings(ENUM.Buildings.Barracks.ToString(), "main_buildlink_barracks_", Get("barracks"));
+             _myBuildings[(int)ENUM.Buildings.Barracks] = new Buildings(ENUM.Buildings.Barracks.ToString(), "main_buildlink_barracks_", Get("barracks"));
             _myBuildings[(int)ENUM.Buildings.Wall] = new Buildings(ENUM.Buildings.Wall.ToString(), "main_buildlink_wall_", Get("wall"));
+            
             _myBuildings[(int)ENUM.Buildings.Academy] = new Buildings(ENUM.Buildings.Academy.ToString(), "", 0);
             _myBuildings[(int)ENUM.Buildings.MarketPlace] = new Buildings(ENUM.Buildings.MarketPlace.ToString(), "", 0);
             _myBuildings[(int)ENUM.Buildings.Stable] = new Buildings(ENUM.Buildings.Stable.ToString(), "", 0);
@@ -146,20 +151,25 @@ namespace TribalWars.API
             
         }
 
+        /// <summary>
+        /// This function is used to help locating buildgin level information
+        /// </summary>
+        /// <param name="key"> Building name inside the page source </param>
+        /// <returns> Level of the defined building </returns>
         private int Get(string key)
         {
             int level;
 
             try
             {
+                //Find the building node inside the page source and read its value
                 var buildingNode = Parser.FindBuildingNode(_wb, key);
-
                 level = int.Parse(buildingNode.InnerText.Replace("Seviye ", "")) - 1;
             }
 
             catch (Exception)
             {
-                level = 0;
+                level = 0; // if there is no level info (not built yet) enters here
             }
 
             return level;
@@ -194,8 +204,10 @@ namespace TribalWars.API
                     if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.Headquarters))) 
                         return; // keep searching the page until the buttons are all loaded 
 
-                    _queue = Parser.QueueNumber(_wb);
+                    _queue = Parser.QueueNumber(_wb); // get the number of queues
 
+                    // queue value can not be more than 2, if there is already 2 buildings on queue 
+                    // upgrade command fails
                     if (_wb.Document != null && _queue != 2)
                     {
                         var button = _wb.Document.GetElementById(_upgReference);

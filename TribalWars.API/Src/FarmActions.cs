@@ -36,16 +36,30 @@ namespace TribalWars.API
 
         public FarmActions(string token)
         {
+            // set the urls using the token
             _url = new URL(token);
 
+            // instantiate the coordinates
             _coordinates = new int[2];
         }
 
+        #region Public Functions
+
+        /// <summary>
+        /// This function performs an attack on village with the specified coordinates,
+        /// with the specified army
+        /// </summary>
+        /// <param name="x"> X coordinate of the village to attack </param>
+        /// <param name="y"> Y coordinate of the village to attack </param>
+        /// <param name="army"> the army in that is about to attack </param>
+        /// <returns> True if successfull, else false </returns>
         public bool Attack(int x, int y, ArmyBuilder army)
         {
+            // instruct to attack the village
             _action = ENUM.FarmActions.Attack;
-            _army = army;
 
+            //get the army and coordinates
+            _army = army;
             _coordinates[X] = x;
             _coordinates[Y] = y;
 
@@ -53,22 +67,16 @@ namespace TribalWars.API
 
             return _actionFlag;
         }
+        #endregion
+        
+        #region Helper Functions
 
-        private void NavigateThroughTread(string url)
-        {
-            var th = new Thread(() =>
-            {
-                _wb = new WebBrowser();
-                _wb.DocumentCompleted += PageLoaded;
-                _wb.Navigate(url);
-                Application.Run();
-            });
-            th.SetApartmentState(ApartmentState.STA);
-
-            th.Start();
-            while (th.IsAlive) { }
-        }
-
+        /// <summary>
+        /// This event fires when the navigation inside theread is complete. The main actions are performed
+        /// in this function.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PageLoaded(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             _actionFlag = false; // reset the action flag
@@ -119,28 +127,24 @@ namespace TribalWars.API
             Application.ExitThread();   // Stops the thread
         }
 
-        public static System.Web.UI.Control FindControlR(System.Web.UI.Control root, string id)
+        /// <summary>
+        /// This function help the web browser to perform actions in a synchronous way.
+        /// </summary>
+        /// <param name="url"> Navigates the browser object to the input url </param>
+        private void NavigateThroughTread(string url)
         {
-            if (root == null) return null;
-
-            var controlFound = root.FindControl(id);
-
-            if (controlFound != null)
+            var th = new Thread(() =>
             {
-                return controlFound;
-            }
+                _wb = new WebBrowser();
+                _wb.DocumentCompleted += PageLoaded;
+                _wb.Navigate(url);
+                Application.Run();
+            });
+            th.SetApartmentState(ApartmentState.STA);
 
-            foreach (System.Web.UI.Control c in root.Controls)
-            {
-                controlFound = c.FindControl(id);
-
-                if (controlFound != null)
-                {
-                    return controlFound;
-                }
-            }
-
-            return null;
+            th.Start();
+            while (th.IsAlive) { }
         }
+        #endregion
     }
 }
