@@ -31,30 +31,39 @@ namespace TribalWars.API
 
         private bool _actionFlag;
         private int _queue;
-        private string _sessionId, _pageData, _upgReference;
+        private string _sessionId, _upgReference;
         private int[] _resources;
         
         public BuildingActions(string token)
         {
-            _url = new URL(token);
+            // set the urls using the token
+            _url = new URL(token); 
             _sessionId = token;
 
+            // get thebuilding levels
             GetBuildings();
-            _resources = new int[3];
+            
+            // initialize resources array
+            _resources = new int[3]; //wood, clay, iron
         }
 
-        public int Queue
+        #region Public Functions
+
+        /// <summary>
+        /// This parameter returns the token that is used to initialize this object
+        /// </summary>
+        public string Token
         {
-            get { return _queue; }
+            get { return _sessionId; }
         }
 
-        public string GetToken()
-        {
-            return _sessionId;
-        }
-
+        /// <summary>
+        /// This function is used to get overall information about the buildings 
+        /// </summary>
+        /// <returns> A list of buildings </returns>
         public Buildings[] GetBuildings()
         {
+            // instruct to get building information
             _action = ENUM.BuildingActions.SetBuildingLevels;
 
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.Headquarters));
@@ -62,30 +71,110 @@ namespace TribalWars.API
             return _myBuildings;
         }
 
+        /// <summary>
+        /// This function is used to upgrade a specific building
+        /// </summary>
+        /// <param name="building"> The building that is to be built </param>
+        /// <returns> True if successfull, else false </returns>
         public bool UpgradeBuilding(ENUM.Buildings building)
         {
+            // get the key word that is on DOM (depended on the level of the building)
             _upgReference = _myBuildings[(int)building].Reference + (_myBuildings[(int)building].Level + 1);
+            
+            // instruct to upgrade the building
             _action = ENUM.BuildingActions.UpgLevel;
+
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.Headquarters));
+            
             return _actionFlag;
         }
 
+        /// <summary>
+        /// Stores the current resources into resource array
+        /// </summary>
+        /// <returns> The resources array </returns>
         public int[] GetResources()
         {
+            // Instruct to get the current resources
             _action = ENUM.BuildingActions.GetResources;
+
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.Headquarters));
 
             return _resources;
         }
 
+        /// <summary>
+        /// Overloads the function to get a specific kind of resource info
+        /// </summary>
+        /// <param name="resource"> The resource that is wanted fetch </param>
+        /// <returns> The value of specified resource </returns>
         public int GetResources(ENUM.Resources resource)
         {
+            // Instruct to get the current resources
             _action = ENUM.BuildingActions.GetResources;
+
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.Headquarters));
 
             return _resources[(int)resource];
         }
 
+        #endregion
+
+        #region Private Functions
+
+        private void GetLevels()
+        {
+            _myBuildings = new Buildings[16];
+
+            _myBuildings[(int)ENUM.Buildings.HQ] = new Buildings(ENUM.Buildings.HQ.ToString(), "main_buildlink_main_", Get("main"));
+            _myBuildings[(int)ENUM.Buildings.RallyPoint] = new Buildings(ENUM.Buildings.RallyPoint.ToString(), "", 1);
+            _myBuildings[(int)ENUM.Buildings.Statue] = new Buildings(ENUM.Buildings.Statue.ToString(), "main_buildlink_statue_", Get("statue"));
+            _myBuildings[(int)ENUM.Buildings.Wood] = new Buildings(ENUM.Buildings.Wood.ToString(), "main_buildlink_wood_", Get("wood"));
+            _myBuildings[(int)ENUM.Buildings.Clay] = new Buildings(ENUM.Buildings.Clay.ToString(), "main_buildlink_stone_", Get("stone"));
+            _myBuildings[(int)ENUM.Buildings.Iron] = new Buildings(ENUM.Buildings.Iron.ToString(), "main_buildlink_iron_", Get("iron"));
+            _myBuildings[(int)ENUM.Buildings.Farm] = new Buildings(ENUM.Buildings.Farm.ToString(), "main_buildlink_farm_", Get("farm"));
+            _myBuildings[(int)ENUM.Buildings.Storage] = new Buildings(ENUM.Buildings.Storage.ToString(), "main_buildlink_storage_", Get("storage"));
+            _myBuildings[(int)ENUM.Buildings.HiddingPlace] = new Buildings(ENUM.Buildings.HiddingPlace.ToString(), "main_buildlink_hide_", Get("hide"));
+
+            _myBuildings[(int)ENUM.Buildings.Barracks] = new Buildings(ENUM.Buildings.Barracks.ToString(), "main_buildlink_barracks_", Get("barracks"));
+            _myBuildings[(int)ENUM.Buildings.Wall] = new Buildings(ENUM.Buildings.Wall.ToString(), "main_buildlink_wall_", Get("wall"));
+            _myBuildings[(int)ENUM.Buildings.Academy] = new Buildings(ENUM.Buildings.Academy.ToString(), "", 0);
+            _myBuildings[(int)ENUM.Buildings.MarketPlace] = new Buildings(ENUM.Buildings.MarketPlace.ToString(), "", 0);
+            _myBuildings[(int)ENUM.Buildings.Stable] = new Buildings(ENUM.Buildings.Stable.ToString(), "", 0);
+            _myBuildings[(int)ENUM.Buildings.Simith] = new Buildings(ENUM.Buildings.Simith.ToString(), "", 0);
+            _myBuildings[(int)ENUM.Buildings.Factory] = new Buildings(ENUM.Buildings.Factory.ToString(), "", 0);
+            
+        }
+
+        private int Get(string key)
+        {
+            int level;
+
+            try
+            {
+                var buildingNode = Parser.FindBuildingNode(_wb, key);
+
+                level = int.Parse(buildingNode.InnerText.Replace("Seviye ", "")) - 1;
+            }
+
+            catch (Exception)
+            {
+                level = 0;
+            }
+
+            return level;
+        }
+
+        #endregion
+
+        #region Helper Functions
+
+        /// <summary>
+        /// This event fires when the navigation inside theread is complete. The main actions are performed
+        /// in this function.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PageLoaded(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             _actionFlag = false; // reset the action flag
@@ -96,7 +185,7 @@ namespace TribalWars.API
                     if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.Headquarters))) 
                         return; // keep searching the page until the buttons are all loaded 
 
-                    _queue = GetQueueNumber();
+                    _queue = Parser.QueueNumber(_wb);
                     
                     GetLevels();
                     _actionFlag = true;
@@ -105,16 +194,19 @@ namespace TribalWars.API
                     if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.Headquarters))) 
                         return; // keep searching the page until the buttons are all loaded 
 
-                    _queue = GetQueueNumber();
+                    _queue = Parser.QueueNumber(_wb);
 
-                    if (_queue == 2)
+                    if (_wb.Document != null && _queue != 2)
+                    {
+                        var button = _wb.Document.GetElementById(_upgReference);
+                        if (button != null) button.InvokeMember("click");
+                    }
+                    else
                     {
                         _actionFlag = false;
                         return;
                     }
 
-                    var button = _wb.Document.GetElementById(_upgReference);
-                    Tools.Click(button);
                     _action = ENUM.BuildingActions.ControlUpg;
                     
                     return;
@@ -124,13 +216,13 @@ namespace TribalWars.API
                     if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.Headquarters)))
                         return; // keep searching the page until the buttons are all loaded 
 
-                    if (GetQueueNumber() != _queue + 1)
+                    if (Parser.QueueNumber(_wb) != _queue + 1)
                     {
                          _wb.Refresh();
                         return;
                     }
 
-                    _queue++;
+                    _queue ++;
                     _actionFlag = true;
 
                     break;
@@ -138,12 +230,10 @@ namespace TribalWars.API
                 case ENUM.BuildingActions.GetResources:
                     if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.Headquarters))) 
                         return; // keep searching the page until the buttons are all loaded 
-                    
-                    _pageData = Tools.SetPageData(_wb, _wb.DocumentText);
 
-                    _resources[(int)ENUM.Resources.Wood] = int.Parse(Tools.GetBetween(_pageData, "\"wood_float\":", "."));
-                    _resources[(int)ENUM.Resources.Clay] = int.Parse(Tools.GetBetween(_pageData, "\"stone_float\":", "."));
-                    _resources[(int)ENUM.Resources.Iron] = int.Parse(Tools.GetBetween(_pageData, "\"iron_float\":", "."));
+                    _resources[(int)ENUM.Resources.Wood] = int.Parse(Parser.FindNode(_wb, "id", "wood").InnerText);
+                    _resources[(int)ENUM.Resources.Clay] = int.Parse(Parser.FindNode(_wb, "id", "stone").InnerText);
+                    _resources[(int)ENUM.Resources.Iron] = int.Parse(Parser.FindNode(_wb, "id", "iron").InnerText);
 
                     _actionFlag = true;
                     break;
@@ -156,6 +246,10 @@ namespace TribalWars.API
             Application.ExitThread();   // Stops the thread
         }
 
+        /// <summary>
+        /// This function help the web browser to perform actions in a synchronous way.
+        /// </summary>
+        /// <param name="url"> Navigates the browser object to the input url </param>
         private void NavigateThroughTread(string url)
         {
             var th = new Thread(() =>
@@ -171,49 +265,7 @@ namespace TribalWars.API
             while (th.IsAlive) { }
         }
 
-        private void GetLevels()
-        {
-            _myBuildings = new Buildings[16];
-
-            _myBuildings[(int)ENUM.Buildings.HQ] = new Buildings(ENUM.Buildings.HQ.ToString(), "main_buildlink_main_", Get("Anabina"));
-            _myBuildings[(int)ENUM.Buildings.RallyPoint] = new Buildings(ENUM.Buildings.RallyPoint.ToString(), "",Get("İçtimaMeydanı"));
-            _myBuildings[(int)ENUM.Buildings.Statue] = new Buildings(ENUM.Buildings.Statue.ToString(), "main_buildlink_statue_",Get("Heykel"));
-            _myBuildings[(int)ENUM.Buildings.Wood] = new Buildings(ENUM.Buildings.Wood.ToString(), "main_buildlink_wood_", Get("Oduncu"));
-            _myBuildings[(int)ENUM.Buildings.Clay] = new Buildings(ENUM.Buildings.Clay.ToString(), "main_buildlink_stone_", Get("Kilocağı"));
-            _myBuildings[(int)ENUM.Buildings.Iron] = new Buildings(ENUM.Buildings.Iron.ToString(), "main_buildlink_iron_", Get("Demirmadeni"));
-            _myBuildings[(int)ENUM.Buildings.Farm] = new Buildings(ENUM.Buildings.Farm.ToString(), "main_buildlink_farm_", Get("Çiftlik"));
-            _myBuildings[(int)ENUM.Buildings.Storage] = new Buildings(ENUM.Buildings.Storage.ToString(), "main_buildlink_storage_", Get("Depo"));
-            _myBuildings[(int)ENUM.Buildings.HiddingPlace] = new Buildings(ENUM.Buildings.HiddingPlace.ToString(), "main_buildlink_hide_",Get("Gizlidepo"));
-
-            _myBuildings[(int)ENUM.Buildings.Academy] = new Buildings(ENUM.Buildings.Academy.ToString(), "", 0);
-            _myBuildings[(int)ENUM.Buildings.Barracks] = new Buildings(ENUM.Buildings.Barracks.ToString(), "", 0);
-            _myBuildings[(int)ENUM.Buildings.MarketPlace] = new Buildings(ENUM.Buildings.MarketPlace.ToString(), "", 0);
-            _myBuildings[(int)ENUM.Buildings.Stable] = new Buildings(ENUM.Buildings.Stable.ToString(), "", 0);
-            _myBuildings[(int)ENUM.Buildings.Simith] = new Buildings(ENUM.Buildings.Simith.ToString(), "", 0);
-            _myBuildings[(int)ENUM.Buildings.Factory] = new Buildings(ENUM.Buildings.Factory.ToString(), "", 0);
-            _myBuildings[(int)ENUM.Buildings.Wall] = new Buildings(ENUM.Buildings.Wall.ToString(), "", 0);
-        }
-
-        private int Get(string key)
-        {
-            int level;
-
-            try
-            {
-                level = int.Parse(Tools.GetBetween(_pageData, string.Format("{0}</A><BR><SPANstyle=\"font-size:0.9em;\">Seviye", key), "</SPAN>"));
-            }
-            catch (Exception)
-            {
-                level = 0;
-            }
-
-            return level;
-        }
-
-        private int GetQueueNumber()
-        {
-            _pageData = Tools.SetPageData(_wb, _wb.DocumentText);
-            return Tools.GetNumSubstringOccurrences(_pageData, "ptalet");
-        }
+        #endregion
+        
     }
 }
