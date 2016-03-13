@@ -20,16 +20,7 @@ namespace TribalWars.API
 {
     public class ENUM
     {
-        public enum Screens
-        {
-            ErrorScreen,
-            LoginScreen,
-            MainScreen,
-            Headquarters,
-            RallyPoint,
-            Barracks,
-            AttackConfirm
-        }
+        #region Public Enumarations
 
         public enum Buildings
         {
@@ -51,37 +42,11 @@ namespace TribalWars.API
             Wall
         }
 
-        public enum LoginActions
-        {
-            Idle,
-            LoginStatus,
-            Login,
-            GetSessionId,
-            EnterCredentials,
-            EnterGame
-        }
-
-        public enum BuildingActions
-        {
-            Idle,
-            UpgLevel,
-            ControlUpg,
-            SetBuildingLevels,
-            GetResources
-        }
-
         public enum Resources
         {
             Wood,
             Clay,
             Iron
-        }
-
-        public enum FarmActions
-        {
-            Idle,
-            Attack,
-            AttackConfirm
         }
 
         public enum Army
@@ -97,5 +62,45 @@ namespace TribalWars.API
             Knight,
             Nobleman
         }
+        #endregion
+        
+        #region Internal Enumarations
+        internal enum Screens
+        {
+            ErrorScreen,
+            LoginScreen,
+            MainScreen,
+            Headquarters,
+            RallyPoint,
+            Barracks,
+            AttackConfirm
+        }
+
+        internal enum FarmActions
+        {
+            Idle,
+            Attack,
+            AttackConfirm
+        }
+
+        internal enum LoginActions
+        {
+            Idle,
+            LoginStatus,
+            Login,
+            GetSessionId,
+            EnterCredentials,
+            EnterGame
+        }
+
+        internal enum BuildingActions
+        {
+            Idle,
+            UpgLevel,
+            ControlUpg,
+            SetBuildingLevels,
+            GetResources
+        }
+        #endregion
     }
 }

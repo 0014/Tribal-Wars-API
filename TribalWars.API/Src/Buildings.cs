@@ -16,8 +16,6 @@
  * 
  **************************************************************************/
 
-using System.Windows.Forms;
-
 namespace TribalWars.API
 {
     public class Buildings

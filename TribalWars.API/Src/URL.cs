@@ -35,14 +35,14 @@ namespace TribalWars.API
             UpdateSession(session);
         }
 
-        public void UpdateSession(string session)
+        /// <summary>
+        /// This function is used to figure out which url belongs to which screen
+        /// </summary>
+        /// <param name="url"> Url of the screen </param>
+        /// <returns> The screen that URL corresponds </returns>
+        internal ENUM.Screens GetCurrentScreen(string url)
         {
-            _sessionId = session;
-            SetUrls();
-        }
 
-        public ENUM.Screens GetCurrentScreen(string url)
-        {
             if (url.Equals(_urls[(int) ENUM.Screens.LoginScreen]))
                 return ENUM.Screens.LoginScreen;
             if (url.Equals(_urls[(int)ENUM.Screens.MainScreen]))
@@ -59,11 +59,19 @@ namespace TribalWars.API
             return ENUM.Screens.ErrorScreen;
         }
 
-        public string GetUrl(ENUM.Screens screen)
+        /// <summary>
+        /// Returns the url of a specific screen
+        /// </summary>
+        /// <param name="screen"> Screen thats url is wanted to be learnt </param>
+        /// <returns> Url of the input screen </returns>
+        internal string GetUrl(ENUM.Screens screen)
         {
             return _urls[(int)screen];
         }
 
+        /// <summary>
+        /// Makes the connection between the url and screen
+        /// </summary>
         private void SetUrls()
         {
             _urls = new string[7];
@@ -73,6 +81,17 @@ namespace TribalWars.API
             _urls[(int)ENUM.Screens.RallyPoint] = BaseUrl.Replace("session", _sessionId) + "place";
             _urls[(int)ENUM.Screens.Barracks] = BaseUrl.Replace("session", _sessionId) + "barracks";
             _urls[(int)ENUM.Screens.AttackConfirm] = BaseUrl.Replace("session", _sessionId) + "place&try=confirm";
+        }
+
+        /// <summary>
+        /// Inserts the session id into all urls.
+        /// Also can be used in any case the session Id is changed
+        /// </summary>
+        /// <param name="session"> Current session ID </param>
+        private void UpdateSession(string session)
+        {
+            _sessionId = session;
+            SetUrls();
         }
     }
 }
