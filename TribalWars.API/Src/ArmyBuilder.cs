@@ -36,12 +36,10 @@ namespace TribalWars.API
         private int _knight;
         private int _nobleman;
 
-        private int _size;
-
         public string Name { get; set; }
         public int[] Army { get; private set; }
         
-        internal string[] armyFields;
+        internal string[] ArmyFields;
 
         public ArmyBuilder()
         {
@@ -56,68 +54,29 @@ namespace TribalWars.API
             SetArmyReference();
         }
 
+        public ArmyBuilder(string name)
+        {
+            // initialize the army size as empty
+            Army = new int[10];
+            for (var i = 0; i < Army.Length; i++)
+            {
+                Army[i] = 0;
+            }
+
+            Name = name;
+            SetArmyReference();
+        }
+
         public ArmyBuilder(int[] army)
         {
             Army = army;
             Name = "Army:"; // default army name
         }
 
-        private void SetArmyReference()
+        public ArmyBuilder(string name, int[] army)
         {
-            armyFields = new string[10];
-
-            armyFields[(int) ENUM.Army.Spearman] = "unit_input_spear";
-            armyFields[(int) ENUM.Army.Swordsman] = "unit_input_sword";
-            armyFields[(int) ENUM.Army.Axeman] = "unit_input_axe";
-            armyFields[(int) ENUM.Army.Scout] = "unit_input_spy";
-            armyFields[(int) ENUM.Army.LightCavalary] = "unit_input_light";
-            armyFields[(int) ENUM.Army.HeavyCavalary] = "unit_input_heavy";
-            armyFields[(int) ENUM.Army.Ram] = "unit_input_ram";
-            armyFields[(int) ENUM.Army.Catapult] = "unit_input_catapult";
-            armyFields[(int) ENUM.Army.Knight] = "unit_input_knight";
-            armyFields[(int) ENUM.Army.Nobleman] = "unit_input_snob";
-        }
-
-        public override string ToString()
-        {
-            var armyString = "Army: ";
-
-            if (_spearman > 0)
-                armyString += "\n Sp = " + _spearman;
-            if (_swordsman > 0)
-                armyString += " Sw = " + _swordsman;
-            if (_axeman > 0)
-                armyString += " Axe = " + _axeman;
-            if (_lightCavalry > 0)
-                armyString += "\n LC = " + _lightCavalry;
-            if (_heavyCavalry > 0)
-                armyString += " HC= " + _heavyCavalry;
-            if (_scout > 0)
-                armyString += " Sc = " + _scout;
-            if (_ram > 0)
-                armyString += "\n Ram = " + _ram;
-            if (_catapult > 0)
-                armyString += " Cat = " + _catapult;
-            if (_knight > 0)
-                armyString += "\n Knig = " + _knight;
-            if (_nobleman > 0)
-                armyString += " Nobl = " + _nobleman;
-
-            return armyString;
-        }
-
-        public string ToString(string name)
-        {
-            switch (name.ToUpperInvariant())
-            {
-                case "Name":
-                    return string.Format("{0}", Name);
-                
-                default:
-                    var msg = string.Format("'{0}' is an invalid format string", name);
-                    
-                    throw new ArgumentException(msg);
-            }
+            Army = army;
+            Name = name;
         }
 
         public int Spearman
@@ -220,6 +179,80 @@ namespace TribalWars.API
             }
         }
 
+        /// <summary>
+        /// Sets each soldiers reference that is in page source
+        /// </summary>
+        private void SetArmyReference()
+        {
+            ArmyFields = new string[10];
+
+            ArmyFields[(int) ENUM.Army.Spearman] = "unit_input_spear";
+            ArmyFields[(int) ENUM.Army.Swordsman] = "unit_input_sword";
+            ArmyFields[(int) ENUM.Army.Axeman] = "unit_input_axe";
+            ArmyFields[(int) ENUM.Army.Scout] = "unit_input_spy";
+            ArmyFields[(int) ENUM.Army.LightCavalary] = "unit_input_light";
+            ArmyFields[(int) ENUM.Army.HeavyCavalary] = "unit_input_heavy";
+            ArmyFields[(int) ENUM.Army.Ram] = "unit_input_ram";
+            ArmyFields[(int) ENUM.Army.Catapult] = "unit_input_catapult";
+            ArmyFields[(int) ENUM.Army.Knight] = "unit_input_knight";
+            ArmyFields[(int) ENUM.Army.Nobleman] = "unit_input_snob";
+        }
+
+        /// <summary>
+        /// Overrides to string to print a detailed army information
+        /// </summary>
+        /// <returns> The string of army detail </returns>
+        public override string ToString()
+        {
+            var armyString = "Army: ";
+
+            if (_spearman > 0)
+                armyString += " Sp = " + _spearman;
+            if (_swordsman > 0)
+                armyString += " Sw = " + _swordsman;
+            if (_axeman > 0)
+                armyString += " Axe = " + _axeman;
+            if (_lightCavalry > 0)
+                armyString += " LC = " + _lightCavalry;
+            if (_heavyCavalry > 0)
+                armyString += " HC= " + _heavyCavalry;
+            if (_scout > 0)
+                armyString += " Sc = " + _scout;
+            if (_ram > 0)
+                armyString += " Ram = " + _ram;
+            if (_catapult > 0)
+                armyString += " Cat = " + _catapult;
+            if (_knight > 0)
+                armyString += " Knig = " + _knight;
+            if (_nobleman > 0)
+                armyString += " Nobl = " + _nobleman;
+
+            return armyString;
+        }
+
+        /// <summary>
+        /// This is another implementation of printing army info
+        /// </summary>
+        /// <param name="name"> According to the paramter the printing method will change </param>
+        /// <returns> The string of army detail </returns>
+        public string ToString(string name)
+        {
+            switch (name.ToUpperInvariant())
+            {
+                case "Name":
+                    return string.Format("{0}", Name);
+                
+                default:
+                    var msg = string.Format("'{0}' is an invalid format string", name);
+                    
+                    throw new ArgumentException(msg);
+            }
+        }
+
+        /// <summary>
+        /// This function is used to get the size of a created army
+        /// </summary>
+        /// <returns> The amount of units the army contains </returns>
         public int GetSize()
         {
             return _spearman + _swordsman + _axeman
