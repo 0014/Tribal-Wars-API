@@ -1,5 +1,4 @@
 # no files with following extensions
-*.dll
 *.cache
 *.pdb
 *.sln
@@ -12,3 +11,4 @@ TribalWars.API.csproj.FileListAbsolute.txt
 # Ignore these folders
 TribalWars.API/obj/Debug/
 TribalWars.API/Properties/
+TribalWars.API/bin/Debug/

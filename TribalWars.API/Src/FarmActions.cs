@@ -87,16 +87,16 @@ namespace TribalWars.API
                     if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.RallyPoint))) 
                         return; // keep searching the page until the buttons are all loaded 
 
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Spearman], _army.Spearman.ToString());
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Swordsman], _army.Swordsman.ToString());
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Axeman], _army.Axeman.ToString());
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Scout], _army.Scout.ToString());
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.LightCavalary], _army.LightCavalry.ToString());
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.HeavyCavalary], _army.HeavyCavalary.ToString());
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Ram], _army.Ram.ToString());
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Catapult], _army.Catapult.ToString());
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Knight], _army.Knight.ToString());
-                    Parser.SetValue(_wb, _army.armyFields[(int)ENUM.Army.Nobleman], _army.Nobleman.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Spearman], _army.Spearman.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Swordsman], _army.Swordsman.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Axeman], _army.Axeman.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Scout], _army.Scout.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.LightCavalary], _army.LightCavalry.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.HeavyCavalary], _army.HeavyCavalary.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Ram], _army.Ram.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Catapult], _army.Catapult.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Knight], _army.Knight.ToString());
+                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Nobleman], _army.Nobleman.ToString());
 
                     var element = Parser.FindElement(_wb, "name", "input");
                     element.SetAttribute("value", _coordinates[X] + "|" + _coordinates[Y]);
