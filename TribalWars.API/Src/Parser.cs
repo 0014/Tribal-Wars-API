@@ -25,18 +25,32 @@ namespace TribalWars.API
 {
     static class Parser
     {
+        /// <summary>
+        /// This function is used to Parse a text inside a Text source.
+        /// </summary>
+        /// <param name="strSource"> The source text </param>
+        /// <param name="strStart"> Initial string inside the source </param>
+        /// <param name="strEnd"> Ending string inside the source </param>
+        /// <returns> The string between the initial and ending strings, returns null if initial or ending strings
+        /// are not within the source text </returns>
         public static string GetBetween(string strSource, string strStart, string strEnd)
         {
             if (strSource.Contains(strStart) && strSource.Contains(strEnd))
             {
-                var start = strSource.IndexOf(strStart, 0) + strStart.Length;
-                var end = strSource.IndexOf(strEnd, start);
-                return strSource.Substring(start, end - start);
+                var start = strSource.IndexOf(strStart, 0) + strStart.Length; // get the indext of the initial string
+                var end = strSource.IndexOf(strEnd, start); // get the indext of the ending string
+                return strSource.Substring(start, end - start); // return string in-between
             }
 
-            return null;
+            return null; // returns null if initial or ending string is not in the source
         }
 
+        /// <summary>
+        /// Finds the span element whichs inner text contains the input value
+        /// </summary>
+        /// <param name="browser"> The web browser element which is navigated to a url </param>
+        /// <param name="key"> The inner text string of the span </param>
+        /// <returns> The span element </returns>
         public static HtmlElement FindSpanContains(WebBrowser browser, string key)
         {
             // Get all the elements of the current url
@@ -50,6 +64,12 @@ namespace TribalWars.API
             return null; // if not found return null
         }
 
+        /// <summary>
+        /// This function counts the number of strings that is inside a text
+        /// </summary>
+        /// <param name="source"> The source text </param>
+        /// <param name="key"> the string that is inside text </param>
+        /// <returns> the amount of the text being repeted inside the source </returns>
         public static int GetNumSubstringOccurrences(string source, string key)
         {
             var num = 0;
@@ -65,6 +85,14 @@ namespace TribalWars.API
             return num;
         }
 
+
+        /// <summary>
+        /// Finds the HtmlElement inside the webbrowser object
+        /// </summary>
+        /// <param name="browser"> The web browser element which is navigated to a url </param>
+        /// <param name="attribute"> The type of element </param>
+        /// <param name="key"> The name of the type </param>
+        /// <returns> html element with the input attributes </returns>
         public static HtmlElement FindElement(WebBrowser browser, string attribute ,string key)
         {
             foreach (HtmlElement element in browser.Document.Body.All)
@@ -77,16 +105,31 @@ namespace TribalWars.API
             return null;
         }
 
+
+        /// <summary>
+        /// Sets the value of an html element within a navigated page
+        /// </summary>
+        /// <param name="browser"> The web browser element which is navigated to a url </param>
+        /// <param name="fieldName"> The id of the element </param>
+        /// <param name="value"> The value that is wanted to be inserted </param>
         public static void SetValue(WebBrowser browser, string fieldName, string value)
         {
             browser.Document.GetElementById(fieldName).SetAttribute("value", value);
         }
 
+        /// <summary>
+        /// This function demonstrates how to use HTML Agility Pack with linq
+        /// </summary>
+        /// <param name="wb"> The web browser element which is navigated to a url </param>
+        /// <returns> The html node </returns>
         private static string UsageAP(WebBrowser wb)
         {
+            // Create the root node by loading the page source
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(wb.DocumentText);
             var root = html.DocumentNode;
+
+            //Start traversing within descendant nodes
             var p = root
                 .Descendants()
                 .Single(n => n.GetAttributeValue("class", "").Equals("module-profile-recognition"))
@@ -96,6 +139,13 @@ namespace TribalWars.API
             return content;
         }
 
+        /// <summary>
+        /// Finds the node inside a navigated page source
+        /// </summary>
+        /// <param name="wb"> The web browser element which is navigated to a url </param>
+        /// <param name="definition"> The type of the node </param>
+        /// <param name="key"> The name of the type </param>
+        /// <returns> html node with specified inputs </returns>
         public static HtmlNode FindNode(WebBrowser wb, string definition, string key)
         {
             HtmlNode p = null;
@@ -118,10 +168,17 @@ namespace TribalWars.API
             return p;
         }
 
+        /// <summary>
+        /// Finds the building node
+        /// </summary>
+        /// <param name="wb"> The web browser element which is navigated to a url </param>
+        /// <param name="key"> The reference of the building </param>
+        /// <returns> The building node according to the specified inputs </returns>
         public static HtmlNode FindBuildingNode(WebBrowser wb, string key)
         {
             HtmlNode p = null;
 
+            // Create the root node by loading the page source
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(wb.DocumentText);
             var root = html.DocumentNode;
@@ -138,17 +195,23 @@ namespace TribalWars.API
             return p;
         }
 
+        /// <summary>
+        /// Checks the building page if there is any buildign being built
+        /// </summary>
+        /// <param name="wb"> The web browser element which is navigated to a url </param>
+        /// <returns> The number of buildigns being built </returns>
         public static int QueueNumber(WebBrowser wb)
         {
-            
             int no;
 
+            // Create the root node by loading the page source
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(wb.DocumentText);
             var root = html.DocumentNode;
 
             try
             {
+                // get the number of buildigins being built
                 no = root
                     .Descendants()
                     .Count(n => n.GetAttributeValue("class", "").Equals("btn btn-cancel"));
