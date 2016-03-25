@@ -13,4 +13,5 @@
 TribalWars.API.csproj.FileListAbsolute.txt
 
 # Ignore these folders
+TribalWars.API/TribalWars.API/
 TribalWars/
