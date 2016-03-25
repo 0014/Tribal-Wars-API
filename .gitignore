@@ -4,14 +4,18 @@
 *.sln
 *.suo
 *.csproj
-*.user
-*.xsc
-*.xsd
-*.xss
+*.DotSettings
 
 # ignore specific files
 TribalWars.API.csproj.FileListAbsolute.txt
 
 # Ignore these folders
 TribalWars.API/TribalWars.API/
+TribalWars.Data/
 TribalWars/
+
+# exclude everything except directory foo/bar
+!TribalWars.Data/
+TribalWars.Data/*
+!TribalWars.Data/Data
+     
