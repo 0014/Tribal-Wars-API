@@ -36,7 +36,7 @@ namespace TribalWars
 
         public override string ToString()
         {
-            return String.Format("{0} | {2} | {1}", Date, Army, Location);
+            return String.Format("{0} | {1} | {2}", Date, Location, Army);
         }
     }
 }

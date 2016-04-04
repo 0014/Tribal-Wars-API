@@ -20,6 +20,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using TribalWars.API;
+using TribalWars.Tools;
 
 namespace TribalWars.Forms
 {
@@ -27,6 +28,7 @@ namespace TribalWars.Forms
     {
         private FarmActions _command;
         private ScheduleTimer _tickTimer;
+        private StoreData _storage;
 
         private delegate void RemoveItemDelegate();
 
@@ -38,7 +40,14 @@ namespace TribalWars.Forms
             Left = 310;
             Top = 25;
             InitializeComponent();
-            
+
+            // set the storage and load the building list
+            const string storageColumns = "Date,Location,Army";
+            _storage = new StoreData("Farming", storageColumns);
+            var items = _storage.ReadLines();
+            for (var i = 1; i < items.Length; i++) // do not add the column names to list
+                ScheduleList.Items.Add(items[i].Replace(",", "|"));
+
             // Army list will display according to the added items name property
             ArmyList.DisplayMember = "Name";
 
@@ -179,6 +188,9 @@ namespace TribalWars.Forms
                 lblState.ForeColor = Color.Green;
                 btnStart.Text = "Stop Schedule";
 
+                // Clear the data before wrintg the elements in it
+                _storage.Clear();
+
                 for (var i = ScheduleList.Items.Count - 1; i >= 0; i--)
                 {
                     var date = Convert.ToDateTime(ScheduleList.Items[i].ToString().Split('|')[0]);
@@ -189,9 +201,11 @@ namespace TribalWars.Forms
                         continue;
                     }
 
+                    _storage.WriteLine(ScheduleList.Items[i].ToString().Replace("|", ",")); // store the items in a file
+
                     _tickTimer.AddEvent(new SingleEvent(date));
                 }
-
+                
                 // start the timer
                 _tickTimer.Start();
 
@@ -213,6 +227,9 @@ namespace TribalWars.Forms
             var item = (AttackScheduler)ScheduleList.Items[0];
 
             _command.Attack(item.Location.X, item.Location.Y, item.Army);
+
+            // remove from the file
+            _storage.DeleteLine(ScheduleList.Items[0].ToString().Replace("|", ","));
 
             // building is upgraded, remove it from the list-box
             RemoveItemAfterUpg();
