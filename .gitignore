@@ -18,4 +18,10 @@ TribalWars/
 !TribalWars.Data/
 TribalWars.Data/*
 !TribalWars.Data/Data
+
+TribalWars/Src/*
+TribalWars/Tools/*
+TribalWars/Forms/*
+TribalWars/TribalWars/bin/Debug/TribalWars.exe
+
      
