@@ -12,16 +12,17 @@ TribalWars.API.csproj.FileListAbsolute.txt
 # Ignore these folders
 TribalWars.API/TribalWars.API/
 TribalWars.Data/
-TribalWars/
 
 # exclude everything except directory foo/bar
 !TribalWars.Data/
 TribalWars.Data/*
 !TribalWars.Data/Data
 
-!TribalWars/Src/*
-!TribalWars/Tools/*
-!TribalWars/Forms/*
+!TribalWars/
+TribalWars/*
+!TribalWars/Src
+!TribalWars/Tools
+!TribalWars/Forms
 !TribalWars/TribalWars/bin/Debug/TribalWars.exe
 
      
