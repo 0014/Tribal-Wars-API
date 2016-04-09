@@ -266,5 +266,9 @@ namespace TribalWars.Forms
             }
         }
 
+        private void button_Click(object sender, EventArgs e)
+        {
+            var sec = _command.Attack(601, 742, (ArmyBuilder)ArmyList.SelectedItem);
+        }
     }
 }
