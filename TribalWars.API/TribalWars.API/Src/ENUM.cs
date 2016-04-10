@@ -59,8 +59,8 @@ namespace TribalWars.API
             HeavyCavalary,
             Ram,
             Catapult,
-            Knight,
-            Nobleman
+            Nobleman,
+            Knight
         }
         #endregion
         

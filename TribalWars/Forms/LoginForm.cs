@@ -32,12 +32,12 @@ namespace TribalWars
             InitializeComponent();
 
             _command = new LoginActions();
-            var userId = _command.GetLoginStatus();
+            var userName = _command.GetLoginStatus();
 
-            if (userId == null) return;
+            if (userName == null) return;
 
             // if the user is already logged in dont show the username and password area
-            HideUI(userId);
+            HideUI(userName);
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -66,9 +66,9 @@ namespace TribalWars
             }
         }
 
-        private void HideUI(string userId)
+        private void HideUI(string userName)
         {
-            lblUser.Text = String.Format("Welcome {0}", userId);
+            lblUser.Text = String.Format("Welcome {0}", userName);
             lblUser.Visible = true;
 
             lblUserName.Visible = false;

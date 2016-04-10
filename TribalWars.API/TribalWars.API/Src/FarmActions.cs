@@ -98,8 +98,8 @@ namespace TribalWars.API
                     Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.HeavyCavalary], _army.HeavyCavalary.ToString());
                     Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Ram], _army.Ram.ToString());
                     Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Catapult], _army.Catapult.ToString());
-                    Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Knight], _army.Knight.ToString());
                     Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Nobleman], _army.Nobleman.ToString());
+                    //Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Knight], _army.Knight.ToString()); //Enable this line if the server allows the Knight
 
                     var attackerCoords = Parser.GetCoordinates(_wb);
                     _ownCoordinates[X] = int.Parse(attackerCoords.Split('|')[X]);

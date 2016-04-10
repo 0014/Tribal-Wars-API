@@ -34,9 +34,9 @@ namespace TribalWars.API
 
         private int _ram;
         private int _catapult;
-
-        private int _knight;
+        
         private int _nobleman;
+        private int _knight;
 
         public string Name { get; set; }
         public int[] Army { get; private set; }
@@ -159,16 +159,6 @@ namespace TribalWars.API
             }
         }
 
-        public int Knight
-        {
-            get { return _knight; }
-            set
-            {
-                _knight = value;
-                Army[(int)ENUM.Army.Knight] = value;
-            }
-        }
-
         public int Nobleman
         {
             get { return _nobleman; }
@@ -176,6 +166,16 @@ namespace TribalWars.API
             {
                 _nobleman = value;
                 Army[(int)ENUM.Army.Nobleman] = value;
+            }
+        }
+
+        public int Knight
+        {
+            get { return _knight; }
+            set
+            {
+                _knight = value;
+                Army[(int)ENUM.Army.Knight] = value;
             }
         }
 
@@ -206,9 +206,9 @@ namespace TribalWars.API
             HeavyCavalary = Army[(int)ENUM.Army.HeavyCavalary];
             Ram = Army[(int)ENUM.Army.Ram];
             Catapult = Army[(int)ENUM.Army.Catapult];
-            Knight = Army[(int)ENUM.Army.Knight];
             Nobleman = Army[(int)ENUM.Army.Nobleman];
-
+            Knight = Army[(int)ENUM.Army.Knight];
+            
             SetArmyProperties();
         }
 
@@ -227,8 +227,8 @@ namespace TribalWars.API
             ArmyFields[(int) ENUM.Army.HeavyCavalary] = "unit_input_heavy";
             ArmyFields[(int) ENUM.Army.Ram] = "unit_input_ram";
             ArmyFields[(int) ENUM.Army.Catapult] = "unit_input_catapult";
+            ArmyFields[(int)ENUM.Army.Nobleman] = "unit_input_snob";
             ArmyFields[(int) ENUM.Army.Knight] = "unit_input_knight";
-            ArmyFields[(int) ENUM.Army.Nobleman] = "unit_input_snob";
         }
 
         /// <summary>
@@ -246,8 +246,8 @@ namespace TribalWars.API
             ArmySpeed[(int)ENUM.Army.HeavyCavalary] = 11;
             ArmySpeed[(int)ENUM.Army.Ram] = 30;
             ArmySpeed[(int)ENUM.Army.Catapult] = 30;
-            ArmySpeed[(int)ENUM.Army.Knight] = 10;
             ArmySpeed[(int)ENUM.Army.Nobleman] = 35;
+            ArmySpeed[(int)ENUM.Army.Knight] = 10;
 
         }
 
@@ -275,11 +275,11 @@ namespace TribalWars.API
                 armyString += " Ram = " + _ram;
             if (_catapult > 0)
                 armyString += " Cat = " + _catapult;
-            if (_knight > 0)
-                armyString += " Knig = " + _knight;
             if (_nobleman > 0)
                 armyString += " Nobl = " + _nobleman;
-
+            if (_knight > 0)
+                armyString += " Knig = " + _knight;
+            
             return armyString;
         }
 

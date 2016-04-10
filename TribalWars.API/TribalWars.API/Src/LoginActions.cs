@@ -104,7 +104,7 @@ namespace TribalWars.API
             {
                 case ENUM.LoginActions.LoginStatus:
                     
-                    var worldLoginButton = Parser.FindNode(_wb, "Class", "world_button_active");// check if the button exists
+                    var worldLoginButton = Parser.FindActiveWorld(_wb, "Class", "world_button_active");// check if the button exists
 
                     // if button exists, user is already logged in, else is not
                     _userId = worldLoginButton != null ? 
@@ -128,7 +128,7 @@ namespace TribalWars.API
                 case ENUM.LoginActions.Login:
                     
                     //Find the button to log-in
-                    var loginButton = Parser.FindSpanContains(_wb, "32.");
+                    var loginButton = Parser.FindSpanContains(_wb, "34.");
 
                     // after loging in, continue to the next stage to enter the game
                     _action = ENUM.LoginActions.EnterGame;

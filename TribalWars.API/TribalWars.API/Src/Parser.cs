@@ -178,6 +178,50 @@ namespace TribalWars.API
         /// <param name="definition"> The type of the node </param>
         /// <param name="key"> The name of the type </param>
         /// <returns> html node with specified inputs </returns>
+        public static HtmlNode FindActiveWorld(WebBrowser wb, string definition, string key)
+        {
+            HtmlNode p = null;
+
+            var html = new HtmlAgilityPack.HtmlDocument();
+            html.LoadHtml(wb.DocumentText);
+            var root = html.DocumentNode;
+
+            try
+            {
+                p = root
+                    .Descendants("DIV")
+                    .Single(n => n.GetAttributeValue("id", "").Equals("active_server"))
+                    .FirstChild
+                    .NextSibling
+                    .NextSibling
+                    .NextSibling
+                    .FirstChild
+                    .NextSibling
+                    .NextSibling
+                    .FirstChild;
+            }
+            catch (ArgumentNullException e)
+            {
+                // no node is not founded
+            }
+            catch (InvalidOperationException i)
+            {
+
+            }
+            catch (NullReferenceException n)
+            {
+
+            }
+            return p;
+        }
+
+        /// <summary>
+        /// Finds the node inside a navigated page source
+        /// </summary>
+        /// <param name="wb"> The web browser element which is navigated to a url </param>
+        /// <param name="definition"> The type of the node </param>
+        /// <param name="key"> The name of the type </param>
+        /// <returns> html node with specified inputs </returns>
         public static string GetCoordinates(WebBrowser wb)
         {
             HtmlNode p = null;

@@ -20,7 +20,7 @@ namespace TribalWars.API
 {
     internal class URL
     {
-        private const string BaseUrl = "https://tr32.klanlar.org/game.php?village=session&screen=";
+        private const string BaseUrl = "https://tr34.klanlar.org/game.php?village=session&screen=";
 
         private string _sessionId;
         private string[] _urls;

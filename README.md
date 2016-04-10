@@ -10,3 +10,12 @@ The API consists two main elements:
 - Village attacking command
 
 These two commands are the most basic commands that can used in many ways. For example you can create your own scheduler program that upgrades buildings or attacks villages on a specific time and date. 
+
+V 1.1
+
+Added windows form application which runs the API:
+- Attacking screen
+- Buildings screen
+
+V 2.0 - 04/09/2016
+API concurancy is change from world 32 to world 34
