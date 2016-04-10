@@ -238,15 +238,16 @@ namespace TribalWars.API
         {
             ArmySpeed = new int[10];
 
-            ArmySpeed[(int)ENUM.Army.Spearman] = 18;
-            ArmySpeed[(int)ENUM.Army.Swordsman] = 22;
-            ArmySpeed[(int)ENUM.Army.Axeman] = 18;
-            ArmySpeed[(int)ENUM.Army.Scout] = 9;
-            ArmySpeed[(int)ENUM.Army.LightCavalary] = 10;
-            ArmySpeed[(int)ENUM.Army.HeavyCavalary] = 11;
-            ArmySpeed[(int)ENUM.Army.Ram] = 30;
-            ArmySpeed[(int)ENUM.Army.Catapult] = 30;
-            ArmySpeed[(int)ENUM.Army.Nobleman] = 35;
+            // world 34 speed setup
+            ArmySpeed[(int)ENUM.Army.Spearman] = 12;
+            ArmySpeed[(int)ENUM.Army.Swordsman] = 15;
+            ArmySpeed[(int)ENUM.Army.Axeman] = 12;
+            ArmySpeed[(int)ENUM.Army.Scout] = 6;
+            ArmySpeed[(int)ENUM.Army.LightCavalary] = 7;
+            ArmySpeed[(int)ENUM.Army.HeavyCavalary] = 7;
+            ArmySpeed[(int)ENUM.Army.Ram] = 20;
+            ArmySpeed[(int)ENUM.Army.Catapult] = 20;
+            ArmySpeed[(int)ENUM.Army.Nobleman] = 23;
             ArmySpeed[(int)ENUM.Army.Knight] = 10;
 
         }

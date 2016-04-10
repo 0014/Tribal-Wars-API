@@ -205,8 +205,8 @@ namespace TribalWars.Forms
                 // start the timer
                 _tickTimer.Start();
 
-                Hide(); // Hide form window.
-                ShowInTaskbar = false; // Remove from taskbar.
+                //Hide(); // Hide form window.
+                //ShowInTaskbar = false; // Remove from taskbar.
             }
 
             _isOn ^= true;
@@ -214,6 +214,9 @@ namespace TribalWars.Forms
 
         private void ScheduleList_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            if (ScheduleList.SelectedIndex == -1)
+                return;
+
             ScheduleList.Items.RemoveAt(ScheduleList.SelectedIndex);
         }
 
@@ -237,8 +240,21 @@ namespace TribalWars.Forms
             //Update the item on the list
             UpdateList(item);
 
+            //Add the item to the scheduler
+            ReSchedule();
+
             // update the storage file
-            _storage.WriteLine(line);
+            _storage.WriteLine(RegisterItem(item));
+        }
+
+        private void ReSchedule()
+        {
+            _isOn = false;
+
+            _tickTimer.Stop();
+            _tickTimer.Dispose();
+
+            btnStart_Click(null, null);
         }
 
         private string RegisterItem(AttackScheduler item)
