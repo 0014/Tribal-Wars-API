@@ -22,6 +22,8 @@ namespace TribalWars.API
 {
     public class ArmyBuilder
     {
+        public int[] ArmySpeed;
+
         private int _spearman;
         private int _swordsman;
         private int _axeman;
@@ -40,7 +42,6 @@ namespace TribalWars.API
         public int[] Army { get; private set; }
         
         internal string[] ArmyFields;
-        internal int[] ArmySpeed;
 
         public ArmyBuilder()
         {
@@ -70,14 +71,12 @@ namespace TribalWars.API
 
         public ArmyBuilder(int[] army)
         {
-            Army = army;
-            Name = "Army:"; // default army name
+            SetArmy(army, "Army:"); // set army with default army name
         }
 
         public ArmyBuilder(string name, int[] army)
         {
-            Army = army;
-            Name = name;
+            SetArmy(army, name); // set army 
         }
 
         public int Spearman
@@ -180,10 +179,37 @@ namespace TribalWars.API
             }
         }
 
+        /// <summary>
+        /// Sets Reference fields and the speed information for each unit
+        /// </summary>
         private void SetArmyProperties()
         {
             SetArmyReference();
             SetArmySpeed();
+        }
+
+        /// <summary>
+        /// This function is used when user sends an army within an array
+        /// </summary>
+        /// <param name="army"> units forming the army </param>
+        /// <param name="name"> the name of the army </param>
+        private void SetArmy(int[] army, string name)
+        {
+            Army = army;
+            Name = name;
+
+            Spearman = Army[(int)ENUM.Army.Spearman];
+            Swordsman = Army[(int)ENUM.Army.Swordsman];
+            Axeman = Army[(int)ENUM.Army.Axeman];
+            Scout = Army[(int)ENUM.Army.Scout];
+            LightCavalry = Army[(int)ENUM.Army.LightCavalary];
+            HeavyCavalary = Army[(int)ENUM.Army.HeavyCavalary];
+            Ram = Army[(int)ENUM.Army.Ram];
+            Catapult = Army[(int)ENUM.Army.Catapult];
+            Knight = Army[(int)ENUM.Army.Knight];
+            Nobleman = Army[(int)ENUM.Army.Nobleman];
+
+            SetArmyProperties();
         }
 
         /// <summary>
@@ -205,6 +231,9 @@ namespace TribalWars.API
             ArmyFields[(int) ENUM.Army.Nobleman] = "unit_input_snob";
         }
 
+        /// <summary>
+        /// Sets each units speed which is minutes per area
+        /// </summary>
         private void SetArmySpeed()
         {
             ArmySpeed = new int[10];

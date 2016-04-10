@@ -30,7 +30,7 @@ namespace TribalWars.Forms
         private ScheduleTimer _tickTimer;
         private StoreData _storage;
 
-        private delegate void RemoveItemDelegate();
+        private delegate void RemoveItemDelegate(AttackScheduler item);
 
         private bool _isOn;
 
@@ -41,12 +41,8 @@ namespace TribalWars.Forms
             Top = 25;
             InitializeComponent();
 
-            // set the storage and load the building list
-            const string storageColumns = "Date,Location,Army";
-            _storage = new StoreData("Farming", storageColumns);
-            var items = _storage.ReadLines();
-            for (var i = 1; i < items.Length; i++) // do not add the column names to list
-                ScheduleList.Items.Add(items[i].Replace(",", "|"));
+            // Restore data from storage
+            RestoreData();
 
             // Army list will display according to the added items name property
             ArmyList.DisplayMember = "Name";
@@ -201,7 +197,7 @@ namespace TribalWars.Forms
                         continue;
                     }
 
-                    _storage.WriteLine(ScheduleList.Items[i].ToString().Replace("|", ",")); // store the items in a file
+                    _storage.WriteLine(RegisterItem((AttackScheduler)ScheduleList.Items[i]));
 
                     _tickTimer.AddEvent(new SingleEvent(date));
                 }
@@ -223,29 +219,56 @@ namespace TribalWars.Forms
 
         private void TickTimer_Elapsed(object sender, ScheduledEventArgs scheduledEventArgs)
         {
+
             //Parse the building name from the list-box
             var item = (AttackScheduler)ScheduleList.Items[0];
+            
+            // Create the line that is to be written in storage
+            var line = RegisterItem(item);
 
-            _command.Attack(item.Location.X, item.Location.Y, item.Army);
+            // Delete the item from the storage
+            _storage.DeleteLine(line);
 
-            // remove from the file
-            _storage.DeleteLine(ScheduleList.Items[0].ToString().Replace("|", ","));
+            //calculate the wait time for the new attack
+            var waitTime = 2 * _command.Attack(item.Location.X, item.Location.Y, item.Army);
 
-            // building is upgraded, remove it from the list-box
-            RemoveItemAfterUpg();
+            item.Date = item.Date.AddMinutes(waitTime); 
+
+            //Update the item on the list
+            UpdateList(item);
+
+            // update the storage file
+            _storage.WriteLine(line);
         }
 
-        private void RemoveItemAfterUpg()
+        private string RegisterItem(AttackScheduler item)
+        {
+            var line = "";
+
+            line += item.Date + ",";
+
+            for (var i = 0; i < item.Army.Army.Length; i++)
+                line += item.Army.Army[i] + ",";
+
+            line += item.Location.X + "," + item.Location.Y;
+
+            return line;
+            
+        }
+
+        private void UpdateList(AttackScheduler item)
         {
             if (ScheduleList.InvokeRequired)
             {
                 // We're not in the UI thread, so we need to call BeginInvoke
-                BeginInvoke(new RemoveItemDelegate(RemoveItemAfterUpg), new object[] { });
+                BeginInvoke(new RemoveItemDelegate(UpdateList), item);
                 return;
             }
 
             // Must be on the UI thread if we've got this far
+            // Update the item on the list
             ScheduleList.Items.RemoveAt(0);
+            ScheduleList.Items.Add(item);
         }
 
         private void OnExit(object sender, EventArgs e)
@@ -266,9 +289,44 @@ namespace TribalWars.Forms
             }
         }
 
+        private void RestoreData()
+        {
+            // set the storage and load the building list
+            const string storageColumns = "Date,Army Spr,Army Swrd,Army Axe,Army Scout,Army LC,Army HC,Army Ram,Army Cat,Army Kngt,Army Nbl,Location X,Location Y";
+            _storage = new StoreData("Farming", storageColumns);
+            var items = _storage.ReadLines();
+            for (var i = 1; i < items.Length; i++) // do not add the column names to list
+            {
+                //get all the field information from line
+                var fields = items[i].Split(',');
+
+                // Create the date information
+                var date = Convert.ToDateTime(fields[0]);
+
+                // Create the army information
+                var armyInfo = new int[10];
+                for (var j = 1; j < 11; j++)
+                    armyInfo[j - 1] = int.Parse(fields[j]);
+                var army = new ArmyBuilder(armyInfo);
+
+                // Create the location information
+                var location = new Village(int.Parse(fields[11]), int.Parse(fields[12]));
+
+                //Finally create the AttackScheduler item from the information above
+                var item = new AttackScheduler(location, army, date);
+
+                // Add the created item into the list
+                ScheduleList.Items.Add(item);
+            }
+        }
+
         private void button_Click(object sender, EventArgs e)
         {
-            var sec = _command.Attack(601, 742, (ArmyBuilder)ArmyList.SelectedItem);
+            var item = (AttackScheduler)ScheduleList.Items[0];
+
+            MessageBox.Show(item.Date.ToString());
+            MessageBox.Show(item.Location.ToString());
+            MessageBox.Show(item.Army.ToString());
         }
     }
 }

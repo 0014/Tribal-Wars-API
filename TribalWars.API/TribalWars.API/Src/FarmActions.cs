@@ -54,7 +54,7 @@ namespace TribalWars.API
         /// <param name="x"> X coordinate of the village to attack </param>
         /// <param name="y"> Y coordinate of the village to attack </param>
         /// <param name="army"> the army in that is about to attack </param>
-        /// <returns> Returns the time in terms of seconds, indicating when the army will reach destination </returns>
+        /// <returns> Returns the time in terms of minutes, indicating when the army will reach destination </returns>
         public int Attack(int x, int y, ArmyBuilder army)
         {
             // instruct to attack the village
@@ -154,6 +154,10 @@ namespace TribalWars.API
             while (th.IsAlive) { }
         }
 
+        /// <summary>
+        /// Calculates how many minute it takes to attack the enemy coordinates
+        /// </summary>
+        /// <returns> The minutes for the distance </returns>
         private int CalculateDistance()
         {
             var xLenght = Math.Abs(_ownCoordinates[X] - _enemyCoordinates[X]);
