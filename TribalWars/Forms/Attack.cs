@@ -157,11 +157,12 @@ namespace TribalWars.Forms
                 ScheduleList.Items.RemoveAt(ScheduleList.SelectedIndex);
                 ScheduleList.Items.Add(scheduleItem);
             }
-            
         }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
+            var addSeconds = 0;
+
             if (_isOn)
             {
                 // Update UI
@@ -193,8 +194,14 @@ namespace TribalWars.Forms
 
                     if (date.CompareTo(DateTime.Now) <= 0)
                     {
+                        addSeconds += 10;
+                        var item = (AttackScheduler)ScheduleList.Items[i];
+                        
+                        date = DateTime.Now.AddSeconds(addSeconds);
+                        item.Date = date;
+
                         ScheduleList.Items.RemoveAt(i);
-                        continue;
+                        ScheduleList.Items.Add(item);
                     }
 
                     _storage.WriteLine(RegisterItem((AttackScheduler)ScheduleList.Items[i]));
