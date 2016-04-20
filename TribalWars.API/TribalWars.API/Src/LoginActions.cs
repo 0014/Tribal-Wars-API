@@ -81,7 +81,7 @@ namespace TribalWars.API
         /// Returns null if login-in fails</returns>
         public string Login()
         {
-            // Logining into game
+            // Logging into game
             _action = ENUM.LoginActions.Login;
             
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.LoginScreen));

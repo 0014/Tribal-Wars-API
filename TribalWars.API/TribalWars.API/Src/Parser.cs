@@ -17,9 +17,6 @@
  **************************************************************************/
 
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using HtmlAgilityPack;
@@ -60,11 +57,7 @@ namespace TribalWars.API
             var elements = browser.Document.GetElementsByTagName("span");
 
             // within each elements find the element that we are looking for
-            foreach (HtmlElement element in elements)
-                if (element.InnerHtml != null && element.InnerHtml.Contains(key))
-                    return element;
-
-            return null; // if not found return null
+            return elements.Cast<HtmlElement>().FirstOrDefault(element => element.InnerHtml != null && element.InnerHtml.Contains(key));
         }
 
         /// <summary>

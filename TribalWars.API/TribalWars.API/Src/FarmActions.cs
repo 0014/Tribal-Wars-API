@@ -32,7 +32,6 @@ namespace TribalWars.API
         private ENUM.FarmActions _action;
         private ArmyBuilder _army;
 
-        private bool _actionFlag;
         private int[] _ownCoordinates, _enemyCoordinates;
 
         public FarmActions(string token)
@@ -65,8 +64,15 @@ namespace TribalWars.API
             _enemyCoordinates[X] = x;
             _enemyCoordinates[Y] = y;
 
-            //Place the attack command
-            NavigateThroughTread(_url.GetUrl(ENUM.Screens.RallyPoint));
+            try
+            {
+                //Place the attack command
+                NavigateThroughTread(_url.GetUrl(ENUM.Screens.RallyPoint));
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
 
             return CalculateDistance();
         }
@@ -82,8 +88,6 @@ namespace TribalWars.API
         /// <param name="e"></param>
         private void PageLoaded(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            _actionFlag = false; // reset the action flag
-
             switch (_action)
             {
                 case ENUM.FarmActions.Attack:

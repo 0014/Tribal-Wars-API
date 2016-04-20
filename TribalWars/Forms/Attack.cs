@@ -33,6 +33,7 @@ namespace TribalWars.Forms
         private delegate void RemoveItemDelegate(AttackScheduler item);
 
         private bool _isOn;
+        private int _errorCounter = 0;
 
         public Attack(string token)
         {
@@ -50,12 +51,15 @@ namespace TribalWars.Forms
             // Create an instance for farm actions
             _command = new FarmActions(token);
 
+            _command.Attack(100, 100, new ArmyBuilder(new int[10] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }));
             _isOn = false; // set the sate as off
 
             // set the tray icon
-            var trayIcon = new NotifyIcon();
-            trayIcon.Text = "My application";
-            trayIcon.Icon = new Icon("Attack.ico");
+            var trayIcon = new NotifyIcon
+            {
+                Text = "My application",
+                Icon = new Icon("Attack.ico")
+            };
 
             // Add menu to tray icon and show it.
             var cm = new ContextMenu();
@@ -194,7 +198,7 @@ namespace TribalWars.Forms
 
                     if (date.CompareTo(DateTime.Now) <= 0)
                     {
-                        addSeconds += 10;
+                        addSeconds += 11;
                         var item = (AttackScheduler)ScheduleList.Items[i];
                         
                         date = DateTime.Now.AddSeconds(addSeconds);
@@ -204,16 +208,13 @@ namespace TribalWars.Forms
                         ScheduleList.Items.Add(item);
                     }
 
-                    _storage.WriteLine(RegisterItem((AttackScheduler)ScheduleList.Items[i]));
-
-                    _tickTimer.AddEvent(new SingleEvent(date));
+                    _storage.WriteLine(RegisterItem((AttackScheduler) ScheduleList.Items[i]));
                 }
-                
+
+                _tickTimer.AddEvent(new SingleEvent(((AttackScheduler)ScheduleList.Items[0]).Date));
+
                 // start the timer
                 _tickTimer.Start();
-
-                //Hide(); // Hide form window.
-                //ShowInTaskbar = false; // Remove from taskbar.
             }
 
             _isOn ^= true;
@@ -229,7 +230,6 @@ namespace TribalWars.Forms
 
         private void TickTimer_Elapsed(object sender, ScheduledEventArgs scheduledEventArgs)
         {
-
             //Parse the building name from the list-box
             var item = (AttackScheduler)ScheduleList.Items[0];
             
@@ -241,6 +241,16 @@ namespace TribalWars.Forms
 
             //calculate the wait time for the new attack
             var waitTime = 2 * _command.Attack(item.Location.X, item.Location.Y, item.Army);
+
+            if (waitTime == -1)
+            {
+                // there is an error on an attacking command
+                // either account disconected or lack of units
+                _errorCounter ++;
+                lblErrorCounter.Text = "Error occurance: " + _errorCounter;
+
+                waitTime = 10; // postponde 10 minutes to try again
+            }
 
             item.Date = item.Date.AddMinutes(waitTime); 
 

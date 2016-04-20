@@ -70,6 +70,7 @@ namespace TribalWars.Forms
             this.lblState = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.ScheduleList = new System.Windows.Forms.ListBox();
+            this.lblErrorCounter = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button
@@ -459,11 +460,22 @@ namespace TribalWars.Forms
             this.ScheduleList.TabIndex = 47;
             this.ScheduleList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ScheduleList_MouseDoubleClick);
             // 
+            // lblErrorCounter
+            // 
+            this.lblErrorCounter.AutoSize = true;
+            this.lblErrorCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F);
+            this.lblErrorCounter.ForeColor = System.Drawing.Color.Maroon;
+            this.lblErrorCounter.Location = new System.Drawing.Point(31, 425);
+            this.lblErrorCounter.Name = "lblErrorCounter";
+            this.lblErrorCounter.Size = new System.Drawing.Size(0, 44);
+            this.lblErrorCounter.TabIndex = 48;
+            // 
             // Attack
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(774, 614);
+            this.Controls.Add(this.lblErrorCounter);
             this.Controls.Add(this.ScheduleList);
             this.Controls.Add(this.lblState);
             this.Controls.Add(this.btnPickDate);
@@ -559,5 +571,6 @@ namespace TribalWars.Forms
         private System.Windows.Forms.Label lblState;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ListBox ScheduleList;
+        private System.Windows.Forms.Label lblErrorCounter;
     }
 }
