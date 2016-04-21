@@ -1,0 +1,1 @@
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\bin\Debug\TribalWars.exe.config

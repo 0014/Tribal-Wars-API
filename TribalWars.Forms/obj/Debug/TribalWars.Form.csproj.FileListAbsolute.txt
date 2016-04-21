@@ -1,0 +1,11 @@
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\bin\Debug\TribalWars.exe.config
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\bin\Debug\TribalWars.exe
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\bin\Debug\TribalWars.pdb
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\bin\Debug\TribalWars.API.dll
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\bin\Debug\TribalWars.API.pdb
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\obj\Debug\TribalWars.Form.csprojResolveAssemblyReference.cache
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\obj\Debug\TribalWars.FrmLogin.resources
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\obj\Debug\TribalWars.Properties.Resources.resources
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\obj\Debug\TribalWars.Form.csproj.GenerateResource.Cache
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\obj\Debug\TribalWars.exe
+C:\Users\arif.gencosmanoglu\Documents\EnteringC#\Web_Request\Web Bot\TribalWars\TribalWars\obj\Debug\TribalWars.pdb
