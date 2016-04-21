@@ -10,14 +10,14 @@ namespace TribalWars.Commands
 
         static void Main(string[] args)
         {
-            string[] array = new string[13] { "Attack", "509", "355", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0" };
+            //string[] array = new string[13] { "Attack", "509", "355", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0" };
 
             var command = new LoginActions();
             var token = command.Login();
             
             if (args[0].Equals("Attack"))
                 Attack(token, args);
-            else if (args[0].Equals("Attack")) 
+            else if (args[0].Equals("Build")) 
                 Build(args);
             else
                 Console.WriteLine("Wrong command entered.");

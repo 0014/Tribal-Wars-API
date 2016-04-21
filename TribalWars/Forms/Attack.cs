@@ -27,7 +27,6 @@ namespace TribalWars.Forms
     public partial class Attack : Form
     {
         private FarmActions _command;
-        private ScheduleTimer _tickTimer;
         private StoreData _storage;
 
         private delegate void RemoveItemDelegate(AttackScheduler item);
@@ -51,7 +50,6 @@ namespace TribalWars.Forms
             // Create an instance for farm actions
             _command = new FarmActions(token);
 
-            _command.Attack(100, 100, new ArmyBuilder(new int[10] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }));
             _isOn = false; // set the sate as off
 
             // set the tray icon
@@ -175,14 +173,14 @@ namespace TribalWars.Forms
                 btnStart.Text = "Start Schedule";
 
                 // Reset the scheduler
-                _tickTimer.Stop();
-                _tickTimer.Dispose();
+                //_tickTimer.Stop();
+                //_tickTimer.Dispose();
             }
             else
             {
                 // Instantiate the scheduler
-                _tickTimer = new ScheduleTimer();
-                _tickTimer.Elapsed += TickTimer_Elapsed;
+                //_tickTimer = new ScheduleTimer();
+                //_tickTimer.Elapsed += TickTimer_Elapsed;
 
                 // Update UI
                 lblState.Text = "ON";
@@ -211,10 +209,10 @@ namespace TribalWars.Forms
                     _storage.WriteLine(RegisterItem((AttackScheduler) ScheduleList.Items[i]));
                 }
 
-                _tickTimer.AddEvent(new SingleEvent(((AttackScheduler)ScheduleList.Items[0]).Date));
+                //_tickTimer.AddEvent(new SingleEvent(((AttackScheduler)ScheduleList.Items[0]).Date));
 
                 // start the timer
-                _tickTimer.Start();
+                //_tickTimer.Start();
             }
 
             _isOn ^= true;
@@ -228,7 +226,7 @@ namespace TribalWars.Forms
             ScheduleList.Items.RemoveAt(ScheduleList.SelectedIndex);
         }
 
-        private void TickTimer_Elapsed(object sender, ScheduledEventArgs scheduledEventArgs)
+        /*private void TickTimer_Elapsed(object sender, ScheduledEventArgs scheduledEventArgs)
         {
             //Parse the building name from the list-box
             var item = (AttackScheduler)ScheduleList.Items[0];
@@ -262,9 +260,9 @@ namespace TribalWars.Forms
 
             // update the storage file
             _storage.WriteLine(RegisterItem(item));
-        }
+        }*/
 
-        private void ReSchedule()
+        /*private void ReSchedule()
         {
             _isOn = false;
 
@@ -272,7 +270,7 @@ namespace TribalWars.Forms
             _tickTimer.Dispose();
 
             btnStart_Click(null, null);
-        }
+        }*/
 
         private string RegisterItem(AttackScheduler item)
         {
