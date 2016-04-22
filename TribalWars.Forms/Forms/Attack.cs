@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using TribalWars.API;
 using TribalWars.Tools;
+using TribalWars.Forms.External;
 
 namespace TribalWars.Forms
 {
@@ -28,6 +29,7 @@ namespace TribalWars.Forms
     {
         private FarmActions _command;
         private StoreData _storage;
+        private TaskScheduler _taskScheduler;
 
         private delegate void RemoveItemDelegate(AttackScheduler item);
 
@@ -40,6 +42,10 @@ namespace TribalWars.Forms
             Left = 310;
             Top = 25;
             InitializeComponent();
+
+            // Set the synchronizing object to get trigger events within the main thread.
+            // Important if you're using Windows Forms
+            _taskScheduler = new TaskScheduler {SynchronizingObject = this};
 
             // Restore data from storage
             RestoreData();
@@ -173,15 +179,11 @@ namespace TribalWars.Forms
                 btnStart.Text = "Start Schedule";
 
                 // Reset the scheduler
-                //_tickTimer.Stop();
-                //_tickTimer.Dispose();
+                _taskScheduler.Enabled = false;
+                _taskScheduler.TriggerItems.Clear();
             }
             else
             {
-                // Instantiate the scheduler
-                //_tickTimer = new ScheduleTimer();
-                //_tickTimer.Elapsed += TickTimer_Elapsed;
-
                 // Update UI
                 lblState.Text = "ON";
                 lblState.ForeColor = Color.Green;
@@ -210,9 +212,11 @@ namespace TribalWars.Forms
                 }
 
                 //_tickTimer.AddEvent(new SingleEvent(((AttackScheduler)ScheduleList.Items[0]).Date));
+                var triggerItem = CreateTriggerItems(((AttackScheduler)ScheduleList.Items[0]).Date);
+                _taskScheduler.AddTrigger(triggerItem); // Add the trigger to List
 
                 // start the timer
-                //_tickTimer.Start();
+                _taskScheduler.Enabled = true;
             }
 
             _isOn ^= true;
@@ -226,7 +230,7 @@ namespace TribalWars.Forms
             ScheduleList.Items.RemoveAt(ScheduleList.SelectedIndex);
         }
 
-        /*private void TickTimer_Elapsed(object sender, ScheduledEventArgs scheduledEventArgs)
+        private void triggerItem_OnTrigger(object sender, TaskScheduler.OnTriggerEventArgs e)
         {
             //Parse the building name from the list-box
             var item = (AttackScheduler)ScheduleList.Items[0];
@@ -236,6 +240,12 @@ namespace TribalWars.Forms
 
             // Delete the item from the storage
             _storage.DeleteLine(line);
+
+            // stop the schedule
+            _taskScheduler.Enabled = false;
+            _taskScheduler.TriggerItems[0].Enabled = false;
+            _taskScheduler.TriggerItems[0].OnTrigger -= triggerItem_OnTrigger;
+            _taskScheduler.TriggerItems.Clear();
 
             //calculate the wait time for the new attack
             var waitTime = 2 * _command.Attack(item.Location.X, item.Location.Y, item.Army);
@@ -255,22 +265,33 @@ namespace TribalWars.Forms
             //Update the item on the list
             UpdateList(item);
 
-            //Add the item to the scheduler
-            ReSchedule();
+            //Add the next item to the scheduler
+            _isOn = false;
+            btnStart_Click(null, null);
 
             // update the storage file
             _storage.WriteLine(RegisterItem(item));
-        }*/
+        }
 
-        /*private void ReSchedule()
+        private TaskScheduler.TriggerItem CreateTriggerItems(DateTime triggerDate)
         {
-            _isOn = false;
+            TaskScheduler.TriggerItem triggerItem = new TaskScheduler.TriggerItem();
 
-            _tickTimer.Stop();
-            _tickTimer.Dispose();
+            triggerItem.StartDate = DateTime.Now;
+            triggerItem.EndDate = DateTime.Now.AddYears(1);
+            triggerItem.TriggerTime = triggerDate;
 
-            btnStart_Click(null, null);
-        }*/
+            // And the trigger-Event :)
+            triggerItem.OnTrigger += triggerItem_OnTrigger;
+
+            triggerItem.TriggerSettings.OneTimeOnly.Active = true;
+
+            triggerItem.TriggerSettings.OneTimeOnly.Date = triggerDate.Date;
+
+            triggerItem.Enabled = true;
+
+            return triggerItem;
+        }
 
         private string RegisterItem(AttackScheduler item)
         {
