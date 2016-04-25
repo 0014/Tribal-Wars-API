@@ -225,12 +225,11 @@ namespace TribalWars.API
 
             try
             {
-                
                 p = root.Descendants("title").Single();
-
             }
             catch
             {
+                Console.WriteLine("Program couldnt catch attacker coordinates.");
                 // no node is not founded
             }
 

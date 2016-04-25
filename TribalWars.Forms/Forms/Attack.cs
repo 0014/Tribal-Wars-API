@@ -198,7 +198,7 @@ namespace TribalWars.Forms
 
                     if (date.CompareTo(DateTime.Now) <= 0)
                     {
-                        addSeconds += 11;
+                        addSeconds += 8;
                         var item = (AttackScheduler)ScheduleList.Items[i];
                         
                         date = DateTime.Now.AddSeconds(addSeconds);
@@ -243,8 +243,6 @@ namespace TribalWars.Forms
 
             // stop the schedule
             _taskScheduler.Enabled = false;
-            _taskScheduler.TriggerItems[0].Enabled = false;
-            _taskScheduler.TriggerItems[0].OnTrigger -= triggerItem_OnTrigger;
             _taskScheduler.TriggerItems.Clear();
 
             //calculate the wait time for the new attack
@@ -254,10 +252,11 @@ namespace TribalWars.Forms
             {
                 // there is an error on an attacking command
                 // either account disconected or lack of units
+                Console.WriteLine("Error state! added 1 minute to the wait time.");
                 _errorCounter ++;
                 lblErrorCounter.Text = "Error occurance: " + _errorCounter;
 
-                waitTime = 10; // postponde 10 minutes to try again
+                waitTime = 1; // postponde 10 minutes to try again
             }
 
             item.Date = item.Date.AddMinutes(waitTime); 
@@ -374,11 +373,20 @@ namespace TribalWars.Forms
 
         private void button_Click(object sender, EventArgs e)
         {
-            var item = (AttackScheduler)ScheduleList.Items[0];
+            TestFunction();
+        }
 
-            MessageBox.Show(item.Date.ToString());
-            MessageBox.Show(item.Location.ToString());
-            MessageBox.Show(item.Army.ToString());
+        private void TestFunction()
+        {
+            var testArmy = new int[10] {0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
+
+            var time = 0;
+            time = _command.Attack(509, 355, new ArmyBuilder(testArmy));
+            time = _command.Attack(509, 354, new ArmyBuilder(testArmy));
+            time = _command.Attack(505, 356, new ArmyBuilder(testArmy));
+            time = _command.Attack(504, 356, new ArmyBuilder(testArmy));
+            time = _command.Attack(504, 359, new ArmyBuilder(testArmy));
+            time = _command.Attack(511, 360, new ArmyBuilder(testArmy));
         }
     }
 }
