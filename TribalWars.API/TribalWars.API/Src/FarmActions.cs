@@ -69,6 +69,7 @@ namespace TribalWars.API
             _errorFlag = true; // the action is not complated, the flag will set as false once action is complete
             _attackFlag = false; // attack is not made yet
             Console.WriteLine("Journey starts");
+
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.RallyPoint));
 
             return _errorFlag ? -1 : CalculateDistance();
@@ -146,7 +147,10 @@ namespace TribalWars.API
                     if (confirm == null)
                     {
                         Console.WriteLine("confirm is null, thread ends.");
-                        
+                        _attackFlag = true; // do not enter here more than once
+                        _wb.Stop();
+                        _wb.DocumentCompleted -= PageLoaded;
+                        _wb.Dispose();
                         Application.ExitThread();   // Stops the thread
                         return;
                     }
@@ -157,11 +161,30 @@ namespace TribalWars.API
                     _attackFlag = true;
                     _errorFlag = false;
 
+                    _action = ENUM.FarmActions.Idle;
+
+                    return;
+                case ENUM.FarmActions.Idle:
+                    Console.WriteLine("Disposing wb...");
+                    _wb.Stop();
+                    _wb.DocumentCompleted -= PageLoaded;
+                    _wb.Dispose();
+
                     break;
             }
 
             Console.WriteLine("Navigation completed.");
             Application.ExitThread();   // Stops the thread
+        }
+
+        private void TestNavigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            Console.WriteLine("Navigating is fine, URL: " + e.Url);
+        }
+
+        private void TestNavigated(object sender, WebBrowserNavigatedEventArgs e)
+        {
+            Console.WriteLine("Navigated is fine, URL: " + e.Url);
         }
 
         /// <summary>
@@ -171,12 +194,18 @@ namespace TribalWars.API
         private void NavigateThroughTread(string url)
         {
             Console.WriteLine("Defining thread...");
+
             var th = new Thread(() =>
             {
                 _wb = new WebBrowser();
                 _wb.DocumentCompleted += PageLoaded;
+                _wb.Navigating += TestNavigating;
+                _wb.Navigated += TestNavigated;
+                _wb.Visible = true;
                 _wb.AllowNavigation = true;
+                _wb.ScriptErrorsSuppressed = true;
                 _wb.Navigate(url);
+                Console.WriteLine("Web browser navigated.");
                 Application.Run();
             });
             Console.WriteLine("Thread defined.");

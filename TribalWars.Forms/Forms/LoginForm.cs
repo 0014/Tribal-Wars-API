@@ -59,10 +59,10 @@ namespace TribalWars
                 var token = _command.Login();
 
                 Hide();
-                var form = new Buildings(token);
+                //var form = new Buildings(token);
                 var form2 = new Attack(token);
                 form2.Show();
-                form.Show();
+                //form.Show();
             }
         }
 

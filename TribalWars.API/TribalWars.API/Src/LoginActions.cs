@@ -160,13 +160,16 @@ namespace TribalWars.API
                         return;
 
                     // get the session id which is located in the url
-                    _sessionId = Parser.GetBetween(_wb.Url.ToString(), "village=", "&screen"); 
+                    _sessionId = Parser.GetBetween(_wb.Url.ToString(), "village=", "&screen");
+
+                    _action = ENUM.LoginActions.Idle;
                     
-                    break;
+                    return;
 
                 case ENUM.LoginActions.Idle:
                     // Do nothing
-                    return;
+                    _wb.Dispose();
+                    break;
             }
 
             _action = ENUM.LoginActions.Idle; // before exiting the thread make sure the action is set back to idle
