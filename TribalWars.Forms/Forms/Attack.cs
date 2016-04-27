@@ -378,18 +378,18 @@ namespace TribalWars.Forms
 
         private void TestFunction()
         {
-            var testArmy = new[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
+            var testArmy_sp = new[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            var testArmy_sc = new[] {0, 0, 0, 1, 0, 0, 0, 0, 0, 0};
             var time = 0;
-            time = _command.Attack(509, 355, new ArmyBuilder(testArmy));
+            time = _command.Attack(509, 355, new ArmyBuilder(testArmy_sp));
             Console.WriteLine(time);
-            time = _command.Attack(509, 354, new ArmyBuilder(testArmy));
+            time = _command.Attack(509, 354, new ArmyBuilder(testArmy_sp));
             Console.WriteLine(time);
-            time = _command.Attack(505, 356, new ArmyBuilder(testArmy));
+            time = _command.Attack(505, 356, new ArmyBuilder(testArmy_sp));
             Console.WriteLine(time);
-            time = _command.Attack(504, 356, new ArmyBuilder(testArmy));
+            time = _command.Attack(504, 356, new ArmyBuilder(testArmy_sp));
             Console.WriteLine(time);
-            time = _command.Attack(504, 359, new ArmyBuilder(testArmy));
+            time = _command.Attack(504, 359, new ArmyBuilder(testArmy_sp));
             Console.WriteLine(time);
             //time = _command.Attack(511, 360, new ArmyBuilder(testArmy));
         }

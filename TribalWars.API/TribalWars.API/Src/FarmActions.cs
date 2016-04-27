@@ -17,6 +17,7 @@
  **************************************************************************/
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -132,8 +133,8 @@ namespace TribalWars.API
                     return;
                 case ENUM.FarmActions.AttackConfirm:
                     Console.WriteLine("Before attack confirm URL comparison...");
-                    if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.AttackConfirm))) 
-                        return; // keep searching the page until the buttons are all loaded 
+                    if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.AttackConfirm)))
+                        return; // keep searching the page until the buttons are all loaded
                     if (_attackFlag)
                     {
                         Console.WriteLine("Attack is already made, returned.");
@@ -148,7 +149,6 @@ namespace TribalWars.API
                     {
                         Console.WriteLine("confirm is null, thread ends.");
                         _attackFlag = true; // do not enter here more than once
-                        _wb.Stop();
                         _wb.DocumentCompleted -= PageLoaded;
                         _wb.Dispose();
                         Application.ExitThread();   // Stops the thread
@@ -165,8 +165,12 @@ namespace TribalWars.API
 
                     return;
                 case ENUM.FarmActions.Idle:
+                    _wb.Navigate(new Uri("about:blank"));
+                    _action = ENUM.FarmActions.Exit;
+
+                    return;
+                case ENUM.FarmActions.Exit:
                     Console.WriteLine("Disposing wb...");
-                    _wb.Stop();
                     _wb.DocumentCompleted -= PageLoaded;
                     _wb.Dispose();
 
@@ -175,16 +179,6 @@ namespace TribalWars.API
 
             Console.WriteLine("Navigation completed.");
             Application.ExitThread();   // Stops the thread
-        }
-
-        private void TestNavigating(object sender, WebBrowserNavigatingEventArgs e)
-        {
-            Console.WriteLine("Navigating is fine, URL: " + e.Url);
-        }
-
-        private void TestNavigated(object sender, WebBrowserNavigatedEventArgs e)
-        {
-            Console.WriteLine("Navigated is fine, URL: " + e.Url);
         }
 
         /// <summary>
@@ -199,8 +193,6 @@ namespace TribalWars.API
             {
                 _wb = new WebBrowser();
                 _wb.DocumentCompleted += PageLoaded;
-                _wb.Navigating += TestNavigating;
-                _wb.Navigated += TestNavigated;
                 _wb.Visible = true;
                 _wb.AllowNavigation = true;
                 _wb.ScriptErrorsSuppressed = true;
@@ -216,8 +208,20 @@ namespace TribalWars.API
             th.Start();
             Console.WriteLine("Thread started.");
 
-            while (th.IsAlive) { }
-            Console.WriteLine("Journey ends.");
+            var sw = new Stopwatch();
+            sw.Start();
+
+           while(th.IsAlive)
+            {
+                if (sw.Elapsed > TimeSpan.FromMilliseconds(20000))
+                {
+                    Console.WriteLine("Infinite loop detected!!!");
+
+                    break;
+                }   
+            }
+
+            Console.Write("Journey ends.");
         }
 
         /// <summary>

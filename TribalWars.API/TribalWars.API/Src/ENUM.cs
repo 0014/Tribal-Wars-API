@@ -80,7 +80,8 @@ namespace TribalWars.API
         {
             Idle,
             Attack,
-            AttackConfirm
+            AttackConfirm,
+            Exit
         }
 
         internal enum LoginActions
