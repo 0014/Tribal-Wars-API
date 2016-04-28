@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
+using ThreadState = System.Threading.ThreadState;
 
 namespace TribalWars.API
 {
@@ -29,24 +30,12 @@ namespace TribalWars.API
         private const int Y = 1;
 
         private URL _url;
-        private WebBrowser _wb;
-        private ENUM.FarmActions _action;
-        private ArmyBuilder _army;
-
-        private int[] _ownCoordinates, _enemyCoordinates;
-        private bool _errorFlag, _attackFlag;
 
         public FarmActions(string token)
         {
             // set the urls using the token
             _url = new URL(token);
-
-            // instantiate the coordinates
-            _enemyCoordinates = new int[2];
-            _ownCoordinates = new int[2];
         }
-
-        #region Public Functions
 
         /// <summary>
         /// This function performs an attack on village with the specified coordinates,
@@ -58,26 +47,68 @@ namespace TribalWars.API
         /// <returns> Returns the time in terms of minutes, indicating when the army will reach destination </returns>
         public int Attack(int x, int y, ArmyBuilder army)
         {
+            var command = new Navigator(army, x, y, _url);
+
+            if (command.ErrorFlag)
+            {
+                command.Dispose();
+                return -1;
+            }
+            
+            var xLenght = Math.Abs(command.OwnCoordinates[X] - x);
+            var yLenght = Math.Abs(command.OwnCoordinates[Y] - y);
+
+            command.Dispose();
+
+            var distance = Math.Sqrt(Math.Pow(xLenght, 2) + Math.Pow(yLenght, 2));
+
+            return (int)Math.Ceiling(distance * army.GetSlowestUnitSpeed());
+        }
+    }
+
+    internal class Navigator : ApplicationContext
+    {
+        private const int X = 0;
+        private const int Y = 1;
+
+        public readonly int[] OwnCoordinates;
+        public bool ErrorFlag;
+
+        private ENUM.FarmActions _action;
+        private WebBrowser _wb;
+        private ArmyBuilder _army;
+        private Thread _th;
+        private URL _url;
+
+        private int[] _enemyCoordinates;
+        private bool _attackFlag;
+
+        public Navigator(ArmyBuilder army, int x, int y, URL url)
+        {
+            // instantiate the coordinates
+            OwnCoordinates = new int[2];
+            _enemyCoordinates = new int[2];
+
             // instruct to attack the village
             _action = ENUM.FarmActions.Attack;
 
             //get the army and coordinates
             _army = army;
+
             _enemyCoordinates[X] = x;
             _enemyCoordinates[Y] = y;
-            
+
             //Place the attack command
-            _errorFlag = true; // the action is not complated, the flag will set as false once action is complete
+            ErrorFlag = true; // the action is not complated, the flag will set as false once action is complete
             _attackFlag = false; // attack is not made yet
+
+            _url = url;
+
+            Console.WriteLine("-------------------------");
             Console.WriteLine("Journey starts");
 
             NavigateThroughTread(_url.GetUrl(ENUM.Screens.RallyPoint));
-
-            return _errorFlag ? -1 : CalculateDistance();
         }
-        #endregion
-        
-        #region Helper Functions
 
         /// <summary>
         /// This event fires when the navigation inside theread is complete. The main actions are performed
@@ -92,26 +123,37 @@ namespace TribalWars.API
             {
                 case ENUM.FarmActions.Attack:
                     Console.WriteLine("Before rally point URL comparison...");
-                    if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.RallyPoint))) 
+                    if (!_wb.Url.ToString().Equals(_url.GetUrl(ENUM.Screens.RallyPoint)))
                         return; // keep searching the page until the buttons are all loaded 
 
                     Console.WriteLine("Rally point URL correct.");
-                    if (_army.Spearman != 0) Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Spearman], _army.Spearman.ToString());
-                    if (_army.Swordsman != 0) Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Swordsman], _army.Swordsman.ToString());
-                    if (_army.Axeman != 0) Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Axeman], _army.Axeman.ToString());
-                    if (_army.Scout != 0) Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Scout], _army.Scout.ToString());
-                    if (_army.LightCavalry != 0) Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.LightCavalary], _army.LightCavalry.ToString());
-                    if (_army.HeavyCavalary != 0) Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.HeavyCavalary], _army.HeavyCavalary.ToString());
-                    if (_army.Ram != 0) Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Ram], _army.Ram.ToString());
-                    if (_army.Catapult != 0) Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Catapult], _army.Catapult.ToString());
-                    if (_army.Nobleman != 0) Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Nobleman], _army.Nobleman.ToString());
+                    if (_army.Spearman != 0)
+                        Parser.SetValue(_wb, _army.ArmyFields[(int) ENUM.Army.Spearman], _army.Spearman.ToString());
+                    if (_army.Swordsman != 0)
+                        Parser.SetValue(_wb, _army.ArmyFields[(int) ENUM.Army.Swordsman], _army.Swordsman.ToString());
+                    if (_army.Axeman != 0)
+                        Parser.SetValue(_wb, _army.ArmyFields[(int) ENUM.Army.Axeman], _army.Axeman.ToString());
+                    if (_army.Scout != 0)
+                        Parser.SetValue(_wb, _army.ArmyFields[(int) ENUM.Army.Scout], _army.Scout.ToString());
+                    if (_army.LightCavalry != 0)
+                        Parser.SetValue(_wb, _army.ArmyFields[(int) ENUM.Army.LightCavalary],
+                            _army.LightCavalry.ToString());
+                    if (_army.HeavyCavalary != 0)
+                        Parser.SetValue(_wb, _army.ArmyFields[(int) ENUM.Army.HeavyCavalary],
+                            _army.HeavyCavalary.ToString());
+                    if (_army.Ram != 0)
+                        Parser.SetValue(_wb, _army.ArmyFields[(int) ENUM.Army.Ram], _army.Ram.ToString());
+                    if (_army.Catapult != 0)
+                        Parser.SetValue(_wb, _army.ArmyFields[(int) ENUM.Army.Catapult], _army.Catapult.ToString());
+                    if (_army.Nobleman != 0)
+                        Parser.SetValue(_wb, _army.ArmyFields[(int) ENUM.Army.Nobleman], _army.Nobleman.ToString());
                     //Parser.SetValue(_wb, _army.ArmyFields[(int)ENUM.Army.Knight], _army.Knight.ToString()); //Enable this line if the server allows the Knight
                     Console.WriteLine("Soldier values entered");
 
                     var attackerCoords = Parser.GetCoordinates(_wb);
                     Console.WriteLine("Got the attacker coordinates");
-                    _ownCoordinates[X] = int.Parse(attackerCoords.Split('|')[X]);
-                    _ownCoordinates[Y] = int.Parse(attackerCoords.Split('|')[Y]);
+                    OwnCoordinates[X] = int.Parse(attackerCoords.Split('|')[X]);
+                    OwnCoordinates[Y] = int.Parse(attackerCoords.Split('|')[Y]);
 
                     Console.WriteLine("Before finding coordinate input...");
                     var element = Parser.FindElement(_wb, "name", "input");
@@ -151,7 +193,7 @@ namespace TribalWars.API
                         _attackFlag = true; // do not enter here more than once
                         _wb.DocumentCompleted -= PageLoaded;
                         _wb.Dispose();
-                        Application.ExitThread();   // Stops the thread
+                        Application.ExitThread(); // Stops the thread
                         return;
                     }
 
@@ -159,7 +201,7 @@ namespace TribalWars.API
                     confirm.InvokeMember("click");
                     Console.WriteLine("Confirmation clicked");
                     _attackFlag = true;
-                    _errorFlag = false;
+                    ErrorFlag = false;
 
                     _action = ENUM.FarmActions.Idle;
 
@@ -171,6 +213,7 @@ namespace TribalWars.API
                     return;
                 case ENUM.FarmActions.Exit:
                     Console.WriteLine("Disposing wb...");
+                    _wb.Stop();
                     _wb.DocumentCompleted -= PageLoaded;
                     _wb.Dispose();
 
@@ -178,7 +221,7 @@ namespace TribalWars.API
             }
 
             Console.WriteLine("Navigation completed.");
-            Application.ExitThread();   // Stops the thread
+            Application.ExitThread(); // Stops the thread
         }
 
         /// <summary>
@@ -189,55 +232,49 @@ namespace TribalWars.API
         {
             Console.WriteLine("Defining thread...");
 
-            var th = new Thread(() =>
+            _th = new Thread(() =>
             {
-                _wb = new WebBrowser();
-                _wb.DocumentCompleted += PageLoaded;
-                _wb.Visible = true;
-                _wb.AllowNavigation = true;
-                _wb.ScriptErrorsSuppressed = true;
-                _wb.Navigate(url);
-                Console.WriteLine("Web browser navigated.");
-                Application.Run();
+                try
+                {
+                    _wb = new WebBrowser();
+                    _wb.DocumentCompleted += PageLoaded;
+                    _wb.Visible = true;
+                    _wb.AllowNavigation = true;
+                    _wb.ScriptErrorsSuppressed = true;
+                    _wb.Navigate(url);
+                    Console.WriteLine("Web browser navigated.");
+                    Application.Run();
+                }
+                catch (ThreadInterruptedException exception)
+                {
+                    /* Clean up. */
+                    Console.WriteLine("Enters exception.");
+                }
             });
             Console.WriteLine("Thread defined.");
 
-            th.SetApartmentState(ApartmentState.STA);
+            _th.SetApartmentState(ApartmentState.STA);
 
             Console.WriteLine("Before thread start...");
-            th.Start();
+            _th.Start();
             Console.WriteLine("Thread started.");
 
             var sw = new Stopwatch();
             sw.Start();
 
-           while(th.IsAlive)
+            while (_th.IsAlive)
             {
-                if (sw.Elapsed > TimeSpan.FromMilliseconds(20000))
+                if (sw.Elapsed > TimeSpan.FromMilliseconds(10000))
                 {
                     Console.WriteLine("Infinite loop detected!!!");
-
+                    MessageBox.Show("Program disconnected. Reopen your program.");
+                    ErrorFlag = true;
                     break;
-                }   
+                }
             }
 
-            Console.Write("Journey ends.");
+            Console.WriteLine("Journey ends.");
+            Console.WriteLine("*************************");
         }
-
-        /// <summary>
-        /// Calculates how many minute it takes to attack the enemy coordinates
-        /// </summary>
-        /// <returns> The minutes for the distance </returns>
-        private int CalculateDistance()
-        {
-            var xLenght = Math.Abs(_ownCoordinates[X] - _enemyCoordinates[X]);
-            var yLenght = Math.Abs(_ownCoordinates[Y] - _enemyCoordinates[Y]);
-
-            var distance = Math.Sqrt(Math.Pow(xLenght, 2) + Math.Pow(yLenght, 2));
-
-            return (int)Math.Ceiling(distance *_army.GetSlowestUnitSpeed()); 
-        }
-
-        #endregion
     }
 }

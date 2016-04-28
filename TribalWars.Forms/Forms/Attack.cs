@@ -34,7 +34,6 @@ namespace TribalWars.Forms
         private delegate void RemoveItemDelegate(AttackScheduler item);
 
         private bool _isOn;
-        private int _errorCounter = 0;
 
         public Attack(string token)
         {
@@ -198,7 +197,7 @@ namespace TribalWars.Forms
 
                     if (date.CompareTo(DateTime.Now) <= 0)
                     {
-                        addSeconds += 8;
+                        addSeconds += 11;
                         var item = (AttackScheduler)ScheduleList.Items[i];
                         
                         date = DateTime.Now.AddSeconds(addSeconds);
@@ -253,8 +252,6 @@ namespace TribalWars.Forms
                 // there is an error on an attacking command
                 // either account disconected or lack of units
                 Console.WriteLine("Error state! added 1 minute to the wait time.");
-                _errorCounter ++;
-                lblErrorCounter.Text = "Error occurance: " + _errorCounter;
 
                 waitTime = 1; // postponde 10 minutes to try again
             }
@@ -380,16 +377,17 @@ namespace TribalWars.Forms
         {
             var testArmy_sp = new[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             var testArmy_sc = new[] {0, 0, 0, 1, 0, 0, 0, 0, 0, 0};
+            var testArmy_lc = new[] { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 };
             var time = 0;
-            time = _command.Attack(509, 355, new ArmyBuilder(testArmy_sp));
+            time = _command.Attack(509, 355, new ArmyBuilder(testArmy_lc));
             Console.WriteLine(time);
-            time = _command.Attack(509, 354, new ArmyBuilder(testArmy_sp));
+            time = _command.Attack(509, 354, new ArmyBuilder(testArmy_lc));
             Console.WriteLine(time);
-            time = _command.Attack(505, 356, new ArmyBuilder(testArmy_sp));
+            time = _command.Attack(505, 356, new ArmyBuilder(testArmy_lc));
             Console.WriteLine(time);
-            time = _command.Attack(504, 356, new ArmyBuilder(testArmy_sp));
+            time = _command.Attack(504, 356, new ArmyBuilder(testArmy_lc));
             Console.WriteLine(time);
-            time = _command.Attack(504, 359, new ArmyBuilder(testArmy_sp));
+            time = _command.Attack(504, 359, new ArmyBuilder(testArmy_lc));
             Console.WriteLine(time);
             //time = _command.Attack(511, 360, new ArmyBuilder(testArmy));
         }
