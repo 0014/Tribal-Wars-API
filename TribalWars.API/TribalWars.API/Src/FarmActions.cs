@@ -17,13 +17,11 @@
  **************************************************************************/
 
 using System;
-using System.Diagnostics;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace TribalWars.API
 {
-    public class FarmActions
+    public class FarmActions : ApplicationContext
     {
         private const int X = 0;
         private const int Y = 1;
@@ -34,12 +32,19 @@ namespace TribalWars.API
         private ArmyBuilder _army;
 
         private int[] _ownCoordinates, _enemyCoordinates;
-        private bool _errorFlag, _attackFlag;
+        private bool _errorFlag, _attackFlag, _isAlive;
 
         public FarmActions(string token)
         {
             // set the urls using the token
             _url = new URL(token);
+
+            // define web browser properties
+            _wb = new WebBrowser();
+            _wb.DocumentCompleted += PageLoaded;
+            _wb.Visible = true;
+            _wb.AllowNavigation = true;
+            _wb.ScriptErrorsSuppressed = true;
 
             // instantiate the coordinates
             _enemyCoordinates = new int[2];
@@ -69,9 +74,12 @@ namespace TribalWars.API
             //Place the attack command
             _errorFlag = true; // the action is not complated, the flag will set as false once action is complete
             _attackFlag = false; // attack is not made yet
+            _isAlive = true;
+
+            Console.WriteLine("-------------------------");
             Console.WriteLine("Journey starts");
 
-            NavigateThroughTread(_url.GetUrl(ENUM.Screens.RallyPoint));
+            Navigate(_url.GetUrl(ENUM.Screens.RallyPoint));
 
             return _errorFlag ? -1 : CalculateDistance();
         }
@@ -148,10 +156,7 @@ namespace TribalWars.API
                     if (confirm == null)
                     {
                         Console.WriteLine("confirm is null, thread ends.");
-                        _attackFlag = true; // do not enter here more than once
-                        _wb.DocumentCompleted -= PageLoaded;
-                        _wb.Dispose();
-                        Application.ExitThread();   // Stops the thread
+                        //_isAlive = false;
                         return;
                     }
 
@@ -170,58 +175,28 @@ namespace TribalWars.API
 
                     return;
                 case ENUM.FarmActions.Exit:
-                    Console.WriteLine("Disposing wb...");
-                    _wb.DocumentCompleted -= PageLoaded;
-                    _wb.Dispose();
-
+                    Console.WriteLine("Application passing through exit...");
                     break;
             }
 
             Console.WriteLine("Navigation completed.");
-            Application.ExitThread();   // Stops the thread
+            _isAlive = false;
+            
         }
 
         /// <summary>
         /// This function help the web browser to perform actions in a synchronous way.
         /// </summary>
         /// <param name="url"> Navigates the browser object to the input url </param>
-        private void NavigateThroughTread(string url)
+        private void Navigate(string url)
         {
-            Console.WriteLine("Defining thread...");
+            Console.WriteLine("Starting navigation...");
+            _wb.Navigate(url);
 
-            var th = new Thread(() =>
-            {
-                _wb = new WebBrowser();
-                _wb.DocumentCompleted += PageLoaded;
-                _wb.Visible = true;
-                _wb.AllowNavigation = true;
-                _wb.ScriptErrorsSuppressed = true;
-                _wb.Navigate(url);
-                Console.WriteLine("Web browser navigated.");
-                Application.Run();
-            });
-            Console.WriteLine("Thread defined.");
+            while (_isAlive) Application.DoEvents();
 
-            th.SetApartmentState(ApartmentState.STA);
-
-            Console.WriteLine("Before thread start...");
-            th.Start();
-            Console.WriteLine("Thread started.");
-
-            var sw = new Stopwatch();
-            sw.Start();
-
-           while(th.IsAlive)
-            {
-                if (sw.Elapsed > TimeSpan.FromMilliseconds(20000))
-                {
-                    Console.WriteLine("Infinite loop detected!!!");
-
-                    break;
-                }   
-            }
-
-            Console.Write("Journey ends.");
+            Console.WriteLine("Journey ends.");
+            Console.WriteLine("*************************");
         }
 
         /// <summary>
